@@ -3,55 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FreeTools - Free Browser Tools, No Signup</title>
-<meta name="description" content="A small collection of free, browser-based tools that run entirely on your device. No signup, nothing uploaded.">
+<title>FreeToolPlanet - A Planet of Free Browser Tools</title>
+<meta name="description" content="FreeToolPlanet is a growing collection of free, browser-based tools for developers, media and artists. Everything runs on your device - no signup, nothing uploaded.">
 <link rel="canonical" href="https://dridiyassin.github.io/">
 <meta name="robots" content="index, follow">
-<meta property="og:title" content="FreeTools - Free Browser Tools">
-<meta property="og:description" content="Free, browser-based tools that run entirely on your device. No signup, nothing uploaded.">
+<meta property="og:title" content="FreeToolPlanet - A Planet of Free Browser Tools">
+<meta property="og:description" content="Free, browser-based tools for devs, media and artists. Runs entirely on your device - no signup, nothing uploaded.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dridiyassin.github.io/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848"
      crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0e1116;--panel:#171c24;--edge:#2a3240;--txt:#dfe6ef;--dim:#8b96a5;--acc:#4f8ef7;--acc2:#9b6cf7}
-body{background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,Segoe UI,Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column}
-a{color:var(--acc);text-decoration:none}
+:root{
+  --bg:#05070f;--panel:#0d1220;--panel2:#111828;--edge:#232c40;
+  --txt:#e8edf7;--dim:#8b96a5;
+  --dev:#5b9bff;--media:#a879ff;--artist:#ff9d5c;
+  --glow-dev:rgba(91,155,255,.35);--glow-media:rgba(168,121,255,.35);--glow-artist:rgba(255,157,92,.35);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,Segoe UI,Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;
+  background-image:
+    radial-gradient(1000px 500px at 85% -10%, rgba(168,121,255,.09), transparent 60%),
+    radial-gradient(900px 480px at 8% 12%, rgba(91,155,255,.08), transparent 60%);
+}
+a{color:var(--dev);text-decoration:none}
 a:hover{text-decoration:underline}
-header{text-align:center;padding:3rem 1.5rem 1.5rem}
-header h1{font-size:2rem}
-header h1 .logo{color:var(--acc)}
-header p{color:var(--dim);margin-top:.5rem}
-main{flex:1;width:100%;max-width:900px;margin:0 auto;padding:1rem 1.5rem}
-.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1rem}
-.tool{display:block;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:1.3rem;transition:border-color .15s,transform .15s}
-.tool:hover{border-color:var(--acc);transform:translateY(-2px);text-decoration:none}
-.tool .ico{font-size:2rem}
-.tool h2{font-size:1.15rem;margin:.6rem 0 .3rem;color:var(--txt)}
-.tool p{color:var(--dim);font-size:.9rem}
-.tool .go{display:inline-block;margin-top:.8rem;color:var(--acc);font-size:.85rem;font-weight:600}
-footer{text-align:center;color:var(--dim);font-size:.85rem;padding:2rem 1.5rem;border-top:1px solid var(--edge);margin-top:2rem}
+
+/* ── starfield ─────────────────────────────── */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+#stars i{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite}
+@keyframes tw{0%,100%{opacity:.12}50%{opacity:.85}}
+.shoot{position:fixed;top:12%;left:-10%;width:110px;height:1px;z-index:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#cfe1ff,#fff);border-radius:2px;
+  transform:rotate(18deg);opacity:0;animation:shoot 9s ease-in 3s infinite}
+.shoot.s2{top:34%;animation-delay:13s;animation-duration:11s}
+@keyframes shoot{0%{transform:translate(0,0) rotate(18deg);opacity:0}
+  2%{opacity:.9}6%{transform:translate(60vw,20vw) rotate(18deg);opacity:0}100%{opacity:0}}
+
+/* ── header / hero ─────────────────────────── */
+.top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:1rem 5%;font-size:.9rem}
+.top .mark{font-weight:700;color:var(--txt)}
+.top .mark span{color:var(--dev)}
+.top a.gh{color:var(--dim)}
+.top a.gh:hover{color:var(--txt);text-decoration:none}
+.hero{position:relative;z-index:2;text-align:center;padding:3.5rem 1.5rem 1rem}
+.hero h1{font-size:clamp(2.1rem,5.5vw,3.4rem);letter-spacing:-.02em;line-height:1.15}
+.hero h1 .grad{background:linear-gradient(95deg,var(--dev) 10%,var(--media) 55%,var(--artist) 95%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{color:var(--dim);max-width:52ch;margin:1rem auto 0;font-size:1.05rem}
+.chips{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+.chip{font-size:.78rem;color:var(--dim);border:1px solid var(--edge);border-radius:99px;padding:.28rem .85rem;background:rgba(13,18,32,.6)}
+.chip b{color:var(--txt);font-weight:600}
+
+/* ── category pillars ──────────────────────── */
+main{position:relative;z-index:2;width:100%;max-width:1080px;margin:0 auto;padding:2.5rem 1.5rem 0}
+.columns{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;align-items:stretch}
+.col{--c:var(--dev);--glow:var(--glow-dev);--tether:165px;
+  position:relative;display:flex;flex-direction:column;gap:.8rem;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--edge);border-radius:16px;padding:1.2rem;
+  box-shadow:0 20px 50px -30px var(--glow)}
+.col.media{--c:var(--media);--glow:var(--glow-media);--tether:105px}
+.col.artist{--c:var(--artist);--glow:var(--glow-artist)}
+/* tether line + anchor dot down to the planet */
+.col::after{content:'';position:absolute;left:50%;top:100%;width:1px;height:var(--tether);
+  background:linear-gradient(to bottom,var(--c),transparent 95%)}
+.col::before{content:'';position:absolute;left:50%;top:calc(100% + var(--tether) - 3px);
+  width:7px;height:7px;margin-left:-3px;border-radius:50%;background:var(--c);
+  box-shadow:0 0 10px 2px var(--glow)}
+.col h2{display:flex;align-items:center;gap:.55rem;font-size:.85rem;letter-spacing:.28em;text-transform:uppercase;color:var(--c);padding-bottom:.4rem;border-bottom:1px solid var(--edge)}
+.col h2 .dot{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 12px 2px var(--glow)}
+.tool{display:block;background:rgba(5,7,15,.55);border:1px solid var(--edge);border-radius:12px;padding:1rem;transition:border-color .15s,transform .15s,box-shadow .15s}
+.tool:hover{border-color:var(--c);transform:translateY(-3px);box-shadow:0 12px 30px -14px var(--glow);text-decoration:none}
+.tool .ico{font-size:1.7rem}
+.tool h3{font-size:1.05rem;margin:.45rem 0 .25rem;color:var(--txt)}
+.tool p{color:var(--dim);font-size:.85rem}
+.tool .go{display:inline-block;margin-top:.7rem;color:var(--c);font-size:.82rem;font-weight:600}
+.tool.soon{border-style:dashed;opacity:.65;text-align:center;padding:1.4rem 1rem;cursor:default}
+.tool.soon .ico{opacity:.7}
+.tool.soon p{font-size:.8rem;margin-top:.3rem}
+.tool.soon:hover{transform:none;box-shadow:none;border-color:var(--edge)}
+
+/* ── the planet ────────────────────────────── */
+.planet-zone{position:relative;z-index:1;flex:1;min-height:clamp(240px,34vh,420px);margin-top:70px;overflow:hidden}
+.planet{position:absolute;left:50%;top:28px;transform:translateX(-50%);
+  width:max(150vw,1200px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 50% 12%,#2e4f83 0%,#1d3560 24%,#122344 48%,#0a1428 72%,#060c1c 100%);
+  box-shadow:0 -18px 90px rgba(91,155,255,.30),0 -4px 30px rgba(168,121,255,.28)}
+.planet::after{content:'';position:absolute;inset:0;border-radius:50%;
+  box-shadow:inset 0 25px 60px rgba(160,195,255,.28),inset 0 90px 160px rgba(91,155,255,.10)}
+.surface{position:absolute;inset:0;border-radius:50%;animation:spin 280s linear infinite;background:
+  radial-gradient(90px 60px at 44% 6%, rgba(140,175,255,.14), transparent 70%),
+  radial-gradient(50px 34px at 56% 4%, rgba(0,0,0,.32), transparent 70%),
+  radial-gradient(34px 24px at 61% 8.5%, rgba(0,0,0,.30), transparent 70%),
+  radial-gradient(120px 70px at 35% 11%, rgba(168,121,255,.10), transparent 70%),
+  radial-gradient(26px 18px at 50% 10%, rgba(0,0,0,.28), transparent 70%),
+  radial-gradient(70px 40px at 66% 13%, rgba(140,175,255,.10), transparent 70%),
+  radial-gradient(44px 30px at 40% 16%, rgba(0,0,0,.22), transparent 70%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* satellite orbiting the planet */
+.orbit{position:absolute;left:50%;top:-40px;width:min(64vw,700px);aspect-ratio:1;transform:translateX(-50%) scaleY(.28);pointer-events:none}
+.orbit .ring{position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(139,150,165,.18);animation:spin 26s linear infinite}
+.orbit .sat{position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;
+  background:#cfe1ff;box-shadow:0 0 12px 3px rgba(160,195,255,.7)}
+/* footer text sits on the planet surface */
+.planet-zone footer{position:absolute;left:0;right:0;top:clamp(90px,14vh,150px);z-index:3;text-align:center;color:#9fb4d8;font-size:.85rem;padding:0 1.5rem;text-shadow:0 1px 8px rgba(5,7,15,.8)}
+.planet-zone footer a{color:#cfe1ff}
+.planet-zone footer .tiny{display:block;margin-top:.35rem;font-size:.72rem;color:#6d82a8}
+
+@media(max-width:900px){
+  .columns{grid-template-columns:1fr;max-width:440px;margin:0 auto}
+  .col::before,.col::after{display:none}
+  .planet-zone{margin-top:40px}
+}
+@media(prefers-reduced-motion:reduce){
+  #stars i,.shoot,.surface,.orbit .ring{animation:none}
+  .shoot{display:none}
+}
 </style>
 </head>
 <body>
-<header>
-  <h1><span class="logo">🧰 FreeTools</span></h1>
-  <p>Free, browser-based tools that run entirely on your device - no signup, nothing uploaded.</p>
-</header>
+<div id="stars"></div>
+<div class="shoot"></div><div class="shoot s2"></div>
+
+<div class="top">
+  <span class="mark">🪐 FreeTool<span>Planet</span></span>
+  <a class="gh" href="https://github.com/dridiyassin" target="_blank" rel="noopener">GitHub ↗</a>
+</div>
+
+<section class="hero">
+  <h1>A planet of <span class="grad">free browser tools</span></h1>
+  <p class="sub">Small, fast tools that run entirely on your device. Pick your orbit - dev, media or artist - and launch a tool.</p>
+  <div class="chips">
+    <span class="chip"><b>100% free</b></span>
+    <span class="chip"><b>No signup</b></span>
+    <span class="chip"><b>Nothing uploaded</b> · runs locally</span>
+    <span class="chip"><b>Open source</b></span>
+  </div>
+</section>
+
 <main>
-  <div class="tools">
-    <a class="tool" href="https://dridiyassin.github.io/FastTex/">
-      <div class="ico">🎨</div>
-      <h2>FastTex</h2>
-      <p>Procedural texture generator - noise, clouds, bricks, rust, fire, magic aura and VFX textures, with layer blending and normal map export.</p>
-      <span class="go">Open tool →</span>
-    </a>
+  <div class="columns">
+    <section class="col dev">
+      <h2><span class="dot"></span>Dev</h2>
+      <div class="tool soon">
+        <div class="ico">🛰️</div>
+        <h3>In orbit…</h3>
+        <p>The first dev tool is on approach. Coming soon.</p>
+      </div>
+      <div class="tool soon">
+        <div class="ico">🛸</div>
+        <h3>Uncharted</h3>
+        <p>Another dev tool will land here.</p>
+      </div>
+    </section>
+
+    <section class="col media">
+      <h2><span class="dot"></span>Media</h2>
+      <div class="tool soon">
+        <div class="ico">📡</div>
+        <h3>Signal incoming…</h3>
+        <p>The first media tool is being assembled. Coming soon.</p>
+      </div>
+    </section>
+
+    <section class="col artist">
+      <h2><span class="dot"></span>Artist</h2>
+      <a class="tool" href="https://dridiyassin.github.io/FastTex/">
+        <div class="ico">🎨</div>
+        <h3>FastTex</h3>
+        <p>Procedural texture generator - noise, clouds, bricks, rust, fire, magic aura and VFX textures, with layer blending and normal map export.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+      <div class="tool soon">
+        <div class="ico">🌌</div>
+        <h3>Nebula ahead</h3>
+        <p>More artist tools are forming.</p>
+      </div>
+    </section>
   </div>
 </main>
-<footer>
-  <p>© 2026 FreeTools · <a href="https://dridiyassin.github.io/FastTex/privacy.html">Privacy Policy</a></p>
-</footer>
+
+<div class="planet-zone">
+  <div class="orbit"><div class="ring"><div class="sat"></div></div></div>
+  <div class="planet"><div class="surface"></div></div>
+  <footer>
+    <p>© 2026 FreeToolPlanet · <a href="https://dridiyassin.github.io/FastTex/privacy.html">Privacy Policy</a></p>
+    <span class="tiny">Every tool runs in your browser. Nothing leaves your device.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var f=document.getElementById('stars'),h='';
+  for(var i=0;i<150;i++){
+    var s=(Math.random()*1.8+.6).toFixed(1);
+    h+='<i style="left:'+(Math.random()*100).toFixed(2)+'%;top:'+(Math.random()*100).toFixed(2)+
+       '%;width:'+s+'px;height:'+s+'px;animation-delay:'+(Math.random()*6).toFixed(1)+
+       's;animation-duration:'+(3+Math.random()*5).toFixed(1)+'s"></i>';
+  }
+  f.innerHTML=h;
+})();
+</script>
 </body>
 </html>
