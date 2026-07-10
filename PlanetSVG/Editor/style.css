@@ -1,0 +1,168 @@
+/* PlanetSVG Editor — tool-specific components. Foundation in ../assets/base.css */
+
+:root{
+  --pad:clamp(14px,2vw,36px);
+  --planet-x:46%;--planet-y:12%;   /* keep the backdrop planet clear of the rail */
+  --accent-2:#8fd9b0;              /* node handles / pen-tool preview */
+  --snap:#ff5cd0;                  /* snap guides stay loud on purpose */
+}
+body{font-size:15px}
+h1{font-size:clamp(1.4rem,2.4vw,2rem)}
+.intro{max-width:86ch}
+kbd{background:var(--inset);border:1px solid var(--glass-border);border-bottom-width:2px;border-radius:5px;padding:0 .32rem;font-size:.8em;font-family:inherit;color:var(--text)}
+
+/* ---- app layout: editor rail + workspace ---------------------- */
+.app{display:grid;grid-template-columns:330px 1fr;gap:1.2rem;margin:1rem 0;align-items:start}
+@media(max-width:820px){.app{grid-template-columns:1fr}}
+.panel{
+  border-radius:var(--r-lg);
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow);
+}
+.side{padding:1rem;display:flex;flex-direction:column;gap:1.1rem;max-height:calc(100vh - 116px);overflow-y:auto;position:sticky;top:92px}
+.sec-head{font-size:.7rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:.55rem}
+.sec-head small{letter-spacing:0;text-transform:none;color:var(--faint);font-weight:500;margin-left:.3rem}
+.sec-head #sel-name{color:var(--accent);letter-spacing:0;text-transform:none}
+/* divider between stacked control groups (align, pathfinder, actions) */
+.subsec{margin-top:1rem;border-top:1px solid var(--border);padding-top:.8rem}
+
+/* ---- shape palette --------------------------------------------- */
+.shape-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}
+.shape-btn{
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;
+  padding:.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,background .2s,transform .2s var(--ease);
+}
+.shape-btn:hover{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 9%,transparent);transform:translateY(-2px)}
+.shape-btn svg{display:block;width:100%;height:auto}
+.shape-btn path{fill:var(--dim)}
+.shape-btn:hover path{fill:var(--accent)}
+
+/* shape tabs */
+.shape-tabs{
+  display:flex;gap:3px;margin-bottom:.75rem;overflow-x:auto;
+  padding:4px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
+}
+.tab-btn{
+  background:none;border:none;color:var(--dim);font:inherit;font-size:.72rem;font-weight:600;
+  padding:.3rem .6rem;cursor:pointer;border-radius:999px;white-space:nowrap;
+  transition:background .2s,color .2s,box-shadow .2s;
+}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--text);background:var(--glass-strong);box-shadow:var(--glass-edge),var(--shadow-sm)}
+
+/* ---- fields ------------------------------------------------------ */
+.row{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;margin:.45rem 0}
+.field{display:block;font-size:.72rem;color:var(--dim);font-weight:600}
+.field.grow{flex:1}
+.field input[type=number],.field select{
+  width:100%;margin-top:.18rem;font:inherit;font-size:.84rem;color:var(--text);
+  background:var(--inset);border:1px solid var(--glass-border);border-radius:9px;
+  padding:.34rem .5rem;transition:border-color .2s,box-shadow .2s;
+}
+.field select{cursor:pointer}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.field input[type=color]{width:100%;height:1.9rem;margin-top:.18rem;border:1px solid var(--glass-border);border-radius:9px;background:var(--inset);padding:2px;cursor:pointer}
+.field input[type=range]{width:100%;accent-color:var(--accent);margin-top:.55rem}
+.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem .5rem}
+.mini-select{background:var(--inset);color:var(--text);border:1px solid var(--glass-border);border-radius:999px;padding:.26rem .55rem;font:inherit;font-size:.76rem;cursor:pointer}
+.mini-select:focus{outline:none;border-color:var(--accent)}
+.mini-color{width:2.2rem;height:1.7rem;border:1px solid var(--glass-border);border-radius:8px;background:var(--inset);padding:2px;cursor:pointer}
+.check{font-size:.76rem}
+.hint{font-size:.72rem;color:var(--faint);line-height:1.7;margin-top:.4rem}
+
+/* button size variants */
+.btn{padding:8px 13px;font-size:.8rem;gap:6px}
+.btn.primary{flex:1}
+.btn.tiny{padding:5px 10px;font-size:.7rem}
+.btn.danger{color:var(--err)}
+.btn.danger:hover{border-color:color-mix(in srgb,var(--err) 45%,transparent);background:color-mix(in srgb,var(--err) 10%,transparent)}
+
+/* ---- layers -------------------------------------------------------- */
+#layers{display:flex;flex-direction:column;gap:.35rem;max-height:170px;overflow-y:auto}
+.lrow{
+  display:flex;align-items:center;gap:.35rem;font-size:.76rem;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:999px;
+  padding:.3rem .65rem;transition:border-color .2s,background .2s;
+}
+.lrow:hover{background:rgba(255,255,255,.07)}
+.lrow.sel{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 10%,transparent);
+}
+.lrow .sw{width:12px;height:12px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.18)}
+.lrow .lname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbtn{background:none;border:0;color:var(--dim);cursor:pointer;font-size:.7rem;padding:.05rem .2rem}
+.lbtn:hover:not(:disabled){color:var(--text)}
+.lbtn:disabled{opacity:.25;cursor:default}
+.layers-empty{font-size:.75rem;color:var(--faint);padding:.2rem}
+
+/* ---- stage ----------------------------------------------------------- */
+.workspace{display:flex;flex-direction:column;gap:.8rem;position:sticky;top:92px}
+@media(max-width:820px){.workspace{position:static}}
+.stage-wrap{
+  width:100%;max-width:min(100%,calc(100vh - 220px));aspect-ratio:1/1;margin:0 auto;
+  background:
+    linear-gradient(45deg,rgba(255,255,255,.045) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.045) 75%),
+    linear-gradient(45deg,rgba(255,255,255,.045) 25%,rgba(0,0,0,.28) 25%,rgba(0,0,0,.28) 75%,rgba(255,255,255,.045) 75%);
+  background-size:24px 24px;background-position:0 0,12px 12px;
+  border:1px solid var(--glass-border);border-radius:var(--r-md);overflow:hidden;
+  box-shadow:var(--glass-edge),var(--shadow-md);
+}
+#stage{display:block;width:100%;height:auto;touch-action:none;user-select:none;cursor:crosshair}
+#stage .shape{cursor:move}
+.guide{stroke:var(--snap);stroke-width:1;stroke-dasharray:5 4}
+.sel-box{fill:none;stroke:var(--accent);stroke-width:1.2;stroke-dasharray:6 4;pointer-events:none}
+.handle{fill:#fff;stroke:var(--accent);stroke-width:1.5;cursor:nwse-resize}
+.handle.rot{cursor:grab;fill:var(--accent);stroke:#fff}
+.rot-stem{stroke:var(--accent);stroke-width:1;pointer-events:none}
+
+/* ---- canvas toolbar ---------------------------------------------------- */
+.canvas-toolbar{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.45rem .6rem;border-radius:999px;
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow-sm);
+}
+.tool-btn{
+  background:transparent;border:1px solid transparent;color:var(--dim);
+  border-radius:999px;padding:.32rem .7rem;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:.35rem;
+  transition:background .2s,color .2s,box-shadow .2s;
+}
+.tool-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.tool-btn.active{color:var(--text);background:var(--glass-strong);border-color:var(--glass-border);box-shadow:var(--glass-edge),var(--shadow-sm)}
+.tool-divider{width:1px;height:1.2rem;background:var(--border-2);margin:0 .2rem}
+.tool-info{font-size:.72rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---- align & pathfinder -------------------------------------------------- */
+.align-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem}
+.pf-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem}
+.align-grid .btn,.pf-row .btn{text-align:center;justify-content:center;width:100%}
+
+/* ---- node edit mode -------------------------------------------------------- */
+.handle.node-handle{fill:var(--accent);stroke:#fff;cursor:pointer}
+.handle.node-handle:hover{fill:#fff;r:7}
+.node-line-preview{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 4;pointer-events:none}
+
+/* ---- size previews ----------------------------------------------------------- */
+.preview-row{
+  display:flex;align-items:center;gap:1rem;
+  padding:.65rem 1rem;border-radius:999px;
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow-sm);
+}
+.preview-label{font-size:.7rem;font-weight:700;color:var(--faint);letter-spacing:.12em;text-transform:uppercase}
+.preview-row img{background:
+  linear-gradient(45deg,rgba(255,255,255,.06) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.06) 75%),
+  linear-gradient(45deg,rgba(255,255,255,.06) 25%,rgba(0,0,0,.3) 25%,rgba(0,0,0,.3) 75%,rgba(255,255,255,.06) 75%);
+  background-size:8px 8px;background-position:0 0,4px 4px;border-radius:6px}
+#pv16{image-rendering:auto}

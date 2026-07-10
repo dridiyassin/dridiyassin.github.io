@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found - FreeToolPlanet</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700&family=Hanken+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* self-contained: this page is served for any missing URL, at any depth */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+  background:#0f1011;color:#f0efec;font:16px/1.6 "Hanken Grotesk",system-ui,sans-serif;
+  text-align:center;padding:2rem;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(58% 44% at 86% -6%, rgba(92,182,146,.16), transparent 70%),
+    radial-gradient(50% 42% at -8% 28%, rgba(138,121,90,.13), transparent 70%);
+}
+.orb{
+  width:120px;height:120px;border-radius:50%;margin-bottom:.6rem;
+  background:radial-gradient(circle at 32% 26%,#3d5a51,#232a28 58%,#17191a 80%);
+  box-shadow:0 0 70px 10px rgba(92,182,146,.18),inset -20px -16px 44px rgba(0,0,0,.6);
+}
+h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.02em}
+p{color:#a4a7ac;max-width:44ch}
+a{color:#5cb692;text-decoration:none;font-weight:600}
+a:hover{text-decoration:underline}
+nav{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:.6rem}
+nav a{
+  padding:9px 18px;border-radius:999px;color:#f0efec;font-size:.9rem;
+  background:rgba(26,27,30,.5);border:1px solid rgba(255,255,255,.10);
+  -webkit-backdrop-filter:blur(28px) saturate(190%);backdrop-filter:blur(28px) saturate(190%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+}
+nav a:hover{text-decoration:none;background:rgba(26,27,30,.8)}
+</style>
+</head>
+<body>
+<div class="orb" aria-hidden="true"></div>
+<h1>404 - Lost in orbit</h1>
+<p>That page doesn't exist. Head back to <a href="/">🪐 FreeToolPlanet</a> or jump straight to a tool:</p>
+<nav>
+  <a href="/PlanetJSON/">🧩 PlanetJSON</a>
+  <a href="/PlanetHTML/">🌐 PlanetHTML</a>
+  <a href="/PlanetVid/">🎬 PlanetVid</a>
+  <a href="/PlanetTex/">🎨 PlanetTex</a>
+  <a href="/PlanetImage/">🖼️ PlanetImage</a>
+  <a href="/PlanetSVG/Editor/">💠 PlanetSVG Editor</a>
+  <a href="/PlanetSVG/Animator/">✨ PlanetSVG Animator</a>
+</nav>
+</body>
+</html>

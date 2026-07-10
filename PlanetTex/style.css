@@ -1,0 +1,85 @@
+/* PlanetTex — tool-specific components. Foundation in ../assets/base.css */
+
+/* ---- app layout: controls rail + viewport, full width --------- */
+.app{display:grid;grid-template-columns:320px 1fr;gap:1.2rem;margin:1.2rem 0;align-items:start}
+@media(max-width:760px){.app{grid-template-columns:1fr}}
+
+.panel{
+  padding:1.1rem;border-radius:var(--r-lg);align-self:start;
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow);
+}
+.panel hr{border:0;border-top:1px solid var(--border);margin:1rem 0}
+
+/* ---- fields ------------------------------------------------------ */
+.field{display:block;font-size:.8rem;color:var(--dim);font-weight:600;margin-bottom:.75rem}
+.field select,.field input[type=number]{
+  width:100%;margin-top:.3rem;font:inherit;font-size:.88rem;color:var(--text);
+  background:var(--inset);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:.5rem .7rem;box-shadow:var(--glass-edge);
+  transition:border-color .2s,box-shadow .2s;
+}
+.field select{cursor:pointer}
+.field select:focus,.field input:focus{outline:none;border-color:var(--accent);box-shadow:var(--glass-edge),0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.field input[type=range]{width:100%;accent-color:var(--accent)}
+.field input[type=color]{width:100%;height:2.1rem;margin-top:.3rem;border:1px solid var(--glass-border);border-radius:var(--r-sm);background:var(--inset);padding:3px;cursor:pointer}
+.field .val{float:right;color:var(--accent);font-weight:700}
+.row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin:.6rem 0}
+
+/* button size variants */
+.btn{padding:8px 14px;font-size:.82rem;gap:6px}
+.btn.primary{flex:1}
+
+/* ---- viewport: canvas capped so it always fits on screen -------- */
+.viewport{
+  display:flex;flex-direction:column;align-items:center;gap:.9rem;align-self:start;
+  position:sticky;top:96px;
+  padding:1.1rem;border-radius:var(--r-lg);
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow);
+}
+.preview-tabs{
+  display:inline-flex;gap:3px;padding:4px;border-radius:999px;align-self:center;
+  background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
+}
+.tab{
+  background:transparent;border:0;color:var(--dim);border-radius:999px;
+  padding:.4rem .95rem;cursor:pointer;font:inherit;font-size:.8rem;font-weight:600;
+  transition:background .2s,color .2s,box-shadow .2s;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);background:var(--glass-strong);box-shadow:var(--glass-edge),var(--shadow-sm)}
+.canvas-wrap{
+  position:relative;aspect-ratio:1;
+  width:min(100%,max(320px,calc(100vh - 270px)));
+  background:rgba(0,0,0,.55);border-radius:var(--r-md);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 0 1px var(--glass-border);
+}
+.canvas-wrap canvas{width:100%;height:100%;image-rendering:auto}
+.canvas-wrap.tiled canvas{width:33.34%;height:33.34%;position:absolute}
+
+/* ---- layer combiner -------------------------------------------------- */
+.layers-head{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:.55rem}
+.layers-head small{color:var(--faint);letter-spacing:0;text-transform:none;font-weight:500}
+.lbtn-add{padding:4px 11px;font-size:.74rem}
+#layers{display:flex;flex-direction:column;gap:.35rem;max-height:180px;overflow-y:auto}
+.lrow{
+  display:flex;align-items:center;gap:.35rem;font-size:.78rem;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:999px;
+  padding:.32rem .7rem;transition:border-color .2s,background .2s;
+}
+.lrow:hover{background:rgba(255,255,255,.07)}
+.lrow.sel{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 10%,transparent);
+}
+.lrow .lname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbtn{background:none;border:0;color:var(--dim);cursor:pointer;font-size:.7rem;padding:.1rem .25rem}
+.lbtn:hover:not(:disabled){color:var(--text)}
+.lbtn:disabled{opacity:.25;cursor:default}

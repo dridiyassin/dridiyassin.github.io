@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanetTex - Free Procedural Texture Generator (Noise, Clouds, VFX, Normal Maps)</title>
+<meta name="description" content="Free online procedural texture generator with 20 texture types and layer blending. Create seamless noise, clouds, bricks, rust, fire, magic aura and VFX textures, export PNG and normal maps. No signup, runs in your browser.">
+<meta name="keywords" content="procedural texture generator, seamless noise texture, normal map generator, VFX textures, cloud texture, perlin noise online, free texture maker">
+<link rel="canonical" href="https://dridiyassin.github.io/PlanetTex/">
+<meta property="og:title" content="PlanetTex - Free Procedural Texture Generator">
+<meta property="og:description" content="Generate seamless noise, cloud, dust and VFX textures with normal maps, free in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dridiyassin.github.io/PlanetTex/">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848"
+     crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PlanetTex Procedural Texture Generator",
+  "url": "https://dridiyassin.github.io/PlanetTex/",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": "Free browser-based procedural texture generator: seamless noise, clouds, dust, fire, magic aura VFX textures with PNG and normal map export."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is this texture generator free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. PlanetTex is 100% free, requires no signup, and all textures are generated locally in your browser. You can use exported textures in personal and commercial projects."}},
+    {"@type": "Question", "name": "Can I make seamless tileable textures?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Enable the Seamless Tiling option and the generated texture will wrap perfectly on all edges, ideal for game engines and 3D materials."}},
+    {"@type": "Question", "name": "Can I export a normal map?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. PlanetTex derives a tangent-space normal map from the generated texture with an adjustable strength slider, and exports it as PNG."}},
+    {"@type": "Question", "name": "Can I combine multiple textures?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. PlanetTex has a layer system: stack any of the 20 texture types with blend modes (multiply, screen, overlay, add and more) and per-layer opacity, then export the combined result."}},
+    {"@type": "Question", "name": "What resolution can I export?", "acceptedAnswer": {"@type": "Answer", "text": "You can export PNG textures at 256, 512, 1024 or 2048 pixels, square."}}
+  ]
+}
+</script>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<header class="site-header">
+  <a class="logo" href="./"><b>PlanetTex</b><span class="tag">procedural texture generator</span></a>
+  <nav>
+    <a href="./">Generator</a>
+    <a href="about.html">About</a>
+    <a href="../privacy.html">Privacy</a>
+    <a class="planet-link" href="../">🪐 FreeToolPlanet</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Free Procedural Texture Generator - Noise, Clouds &amp; VFX</h1>
+  <p class="intro">Generate <strong>seamless procedural textures</strong> directly in your browser: 20 texture types including noise, clouds, wood, bricks, marble, rust, and VFX effects like fire, magic auras, lightning and nebulae. <strong>Stack layers with blend modes</strong> to combine them, then export a <strong>PNG texture and matching normal map</strong> - free, no signup, nothing uploaded.</p>
+
+  <div class="app">
+    <aside class="panel" id="controls">
+      <div class="layers-head"><span>Layers <small>(top drawn last)</small></span><button id="btn-add" class="btn lbtn-add" title="Add a layer on top">＋ Add layer</button></div>
+      <div id="layers"></div>
+      <hr>
+      <label class="field">Texture type
+        <select id="gen-select"></select>
+      </label>
+      <div id="params"></div>
+      <div class="row">
+        <button id="btn-random" class="btn">🎲 Randomize</button>
+        <label class="check"><input type="checkbox" id="tile-chk" checked> Seamless tiling</label>
+      </div>
+      <hr>
+      <label class="field">Export size
+        <select id="res-select">
+          <option>256</option><option selected>512</option><option>1024</option><option>2048</option>
+        </select>
+      </label>
+      <label class="field">Normal map strength <span id="nrm-val">2.0</span>
+        <input type="range" id="nrm-strength" min="0.2" max="8" step="0.1" value="2">
+      </label>
+      <div class="row">
+        <button id="btn-png" class="btn primary">⬇ Texture PNG</button>
+        <button id="btn-normal" class="btn primary">⬇ Normal Map</button>
+      </div>
+      <div class="row">
+        <button id="btn-save" class="btn">💾 Save preset</button>
+        <button id="btn-load" class="btn">📂 Load preset</button>
+        <input type="file" id="preset-file" accept=".json" hidden>
+      </div>
+    </aside>
+
+    <section class="viewport">
+      <div class="preview-tabs">
+        <button class="tab active" data-view="tex">Texture</button>
+        <button class="tab" data-view="nrm">Normal map</button>
+        <button class="tab" data-view="tiled">Tiled ×3</button>
+      </div>
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="out"></canvas>
+        <canvas id="gl" hidden></canvas>
+        <canvas id="nrm-canvas" hidden></canvas>
+      </div>
+    </section>
+  </div>
+
+  <article class="content">
+    <h2>What can you create with PlanetTex?</h2>
+    <p>PlanetTex renders textures on your GPU using procedural mathematics, so every image is unique, resolution-independent and generated in milliseconds. Typical uses:</p>
+    <ul>
+      <li><strong>Game development</strong> - seamless ground, rock, cloud and detail textures for Unity, Unreal or Godot, with matching normal maps.</li>
+      <li><strong>VFX &amp; motion graphics</strong> - fire gradients, magic aura rings, energy plasma and nebula backdrops for particle systems and shaders.</li>
+      <li><strong>3D materials</strong> - grayscale height/roughness sources for Blender, Substance or any PBR workflow.</li>
+      <li><strong>Design</strong> - dust, grain and paper-noise overlays for photos, posters and web backgrounds.</li>
+    </ul>
+
+    <h2>How to use it</h2>
+    <ol>
+      <li>Pick a <strong>texture type</strong> for the base layer (noise, clouds, bricks, rust, fire, aura…).</li>
+      <li>Adjust <strong>scale, detail, distortion, colors and seed</strong> - the preview updates live. Hit 🎲 Randomize to explore.</li>
+      <li><strong>Combine textures with layers</strong>: click ＋ Add layer, pick another texture type, and set its <strong>blend mode</strong> (multiply, screen, overlay, add…) and opacity. Stack as many as you like - rust over bricks, dust over marble, stars over an aura.</li>
+      <li>Enable <strong>Seamless tiling</strong> if the texture must wrap (check it with the Tiled ×3 view).</li>
+      <li>Choose an export size and download the <strong>PNG texture</strong> and, if needed, the <strong>normal map</strong>. Save the layer stack as a <strong>preset file</strong> to continue later.</li>
+    </ol>
+
+    <h2>FAQ</h2>
+    <h3>Is it really free? Can I use textures commercially?</h3>
+    <p>Yes. Everything is generated locally in your browser and the output is yours - use it in personal or commercial projects, no attribution required.</p>
+    <h3>How does the normal map export work?</h3>
+    <p>PlanetTex treats the texture's luminance as a height field and computes a tangent-space normal map (the common purple-blue format) using a Sobel filter. The strength slider controls how pronounced the bumps are.</p>
+    <h3>Are my images uploaded anywhere?</h3>
+    <p>No. There is no server - the entire generator runs client-side with WebGL. Nothing you create ever leaves your device.</p>
+    <h3>How does the layer combiner work?</h3>
+    <p>Each layer is its own procedural texture with independent settings. Layers are drawn bottom-to-top and merged with the blend mode you choose - the same modes you know from image editors (normal, add, multiply, screen, overlay, soft light, difference) plus an opacity slider. It gives you most of the power of a node graph with none of the complexity, and you can save the whole stack as a preset JSON file.</p>
+    <h3>Why do seamless textures look slightly different?</h3>
+    <p>Seamless mode forces the noise lattice to repeat at the texture border, which can subtly change the pattern. Use the Tiled ×3 preview to verify the result wraps cleanly.</p>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>© 2026 PlanetTex · part of <a href="../">🪐 FreeToolPlanet</a> · <a href="about.html">About</a> · <a href="../privacy.html">Privacy Policy</a> · Textures are generated locally in your browser.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

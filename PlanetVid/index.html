@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanetVid - Free Online Video Converter (MP4, WebM, GIF, MP3) - No Upload</title>
+<meta name="description" content="Free online video converter that runs in your browser. Convert videos to MP4, WebM or GIF, extract MP3/WAV audio, trim, resize and mute - no upload, no signup, no watermark.">
+<meta name="keywords" content="video converter online free, convert video to mp4, video to gif converter, extract audio from video, mp4 to webm, video converter no upload, browser video converter">
+<link rel="canonical" href="https://dridiyassin.github.io/PlanetVid/">
+<meta property="og:title" content="PlanetVid - Free Online Video Converter, No Upload">
+<meta property="og:description" content="Convert video to MP4, WebM, GIF or extract MP3 audio - free, in your browser, nothing uploaded.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dridiyassin.github.io/PlanetVid/">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848"
+     crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PlanetVid Video Converter",
+  "url": "https://dridiyassin.github.io/PlanetVid/",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": "Free browser-based video converter: convert to MP4, WebM or GIF, extract MP3/WAV audio, trim, resize and mute - without uploading your files."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is this video converter free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. PlanetVid is 100% free with no signup, no watermark and no file limits other than your device's memory."}},
+    {"@type": "Question", "name": "Are my videos uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. PlanetVid converts video entirely in your browser using FFmpeg compiled to WebAssembly. Your files never leave your device."}},
+    {"@type": "Question", "name": "Which formats are supported?", "acceptedAnswer": {"@type": "Answer", "text": "You can convert to MP4 (H.264), WebM (VP8), animated GIF, or extract the audio track as MP3 or WAV. Almost any input format FFmpeg can read is accepted, including MOV, MKV, AVI and WebM."}},
+    {"@type": "Question", "name": "Can I trim or resize the video?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set a start time and duration to trim, choose a target resolution (1080p, 720p, 480p, 360p), adjust quality and optionally remove the audio track."}},
+    {"@type": "Question", "name": "Why is the first conversion slow to start?", "acceptedAnswer": {"@type": "Answer", "text": "The FFmpeg engine (about 30 MB of WebAssembly) is downloaded once on your first conversion, then cached by the browser. Conversion speed itself depends on your device's CPU."}}
+  ]
+}
+</script>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<header class="site-header">
+  <a class="logo" href="./"><b>PlanetVid</b><span class="tag">in-browser video converter</span></a>
+  <nav>
+    <a href="./">Converter</a>
+    <a href="about.html">About</a>
+    <a href="../privacy.html">Privacy</a>
+    <a class="planet-link" href="../">🪐 FreeToolPlanet</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Free Online Video Converter - MP4, WebM, GIF &amp; MP3</h1>
+  <p class="intro">Convert videos <strong>directly in your browser</strong>: to <strong>MP4 or WebM</strong>, to <strong>animated GIF</strong>, or extract the audio as <strong>MP3/WAV</strong>. Trim, resize, mute and control quality - <strong>no upload, no signup, no watermark</strong>. Your file never leaves your device.</p>
+
+  <div class="app">
+    <section class="drop" id="drop">
+      <input type="file" id="file-input" accept="video/*,.mkv,.avi,.mov,.webm,.mp4,.m4v,.mpg,.mpeg,.wmv,.flv,.3gp" hidden>
+      <div class="drop-inner" id="drop-inner">
+        <div class="drop-ico">🎬</div>
+        <p><strong>Drop a video here</strong> or click to choose a file</p>
+        <p class="drop-hint">MP4, MOV, MKV, AVI, WebM and more · stays on your device</p>
+      </div>
+      <div class="file-info" id="file-info" hidden>
+        <span id="file-name"></span>
+        <button class="btn small" id="btn-change">Change file</button>
+      </div>
+    </section>
+
+    <section class="panel options">
+      <div class="opt-grid">
+        <label class="field">Convert to
+          <select id="fmt-select">
+            <option value="mp4" selected>MP4 (H.264 video)</option>
+            <option value="webm">WebM (VP8 video)</option>
+            <option value="gif">GIF (animation)</option>
+            <option value="mp3">MP3 (audio only)</option>
+            <option value="wav">WAV (audio only)</option>
+          </select>
+        </label>
+        <label class="field" id="res-field">Resolution
+          <select id="res-select">
+            <option value="0" selected>Keep original</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+            <option value="360">360p</option>
+          </select>
+        </label>
+        <label class="field" id="q-field">Quality <span id="q-val">balanced</span>
+          <input type="range" id="q-range" min="0" max="2" step="1" value="1">
+        </label>
+        <label class="field" id="fps-field" hidden>GIF frame rate
+          <select id="fps-select">
+            <option value="8">8 fps (small file)</option>
+            <option value="12" selected>12 fps</option>
+            <option value="15">15 fps</option>
+            <option value="24">24 fps (smooth)</option>
+          </select>
+        </label>
+        <label class="field">Trim start (seconds, optional)
+          <input type="number" id="trim-start" min="0" step="0.1" placeholder="0">
+        </label>
+        <label class="field">Duration (seconds, optional)
+          <input type="number" id="trim-len" min="0.1" step="0.1" placeholder="whole video">
+        </label>
+      </div>
+      <div class="row">
+        <label class="check" id="mute-field"><input type="checkbox" id="mute-chk"> Remove audio track</label>
+        <span class="spacer"></span>
+        <button id="btn-convert" class="btn primary big" disabled>🚀 Convert</button>
+      </div>
+    </section>
+
+    <section class="panel progress-panel" id="progress-panel" hidden>
+      <div class="prog-head"><span id="prog-label">Preparing…</span><span id="prog-pct"></span></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <details class="log-wrap"><summary>FFmpeg log</summary><pre id="log"></pre></details>
+    </section>
+
+    <section class="panel result" id="result" hidden>
+      <h2 class="result-title">✅ Done - preview &amp; download</h2>
+      <div class="preview" id="preview"></div>
+      <div class="row">
+        <a id="btn-download" class="btn primary big" download>⬇ Download result</a>
+        <span class="result-info" id="result-info"></span>
+      </div>
+    </section>
+  </div>
+
+  <article class="content">
+    <h2>How it works</h2>
+    <p>PlanetVid runs <strong>FFmpeg compiled to WebAssembly</strong> inside your browser tab. The engine (~30&nbsp;MB) is fetched once on your first conversion and cached; after that the converter also works offline. Because everything is local, a private video stays private - there is no upload queue, no server and no watermark.</p>
+
+    <h2>How to convert a video</h2>
+    <ol>
+      <li><strong>Drop your video</strong> on the page or click to pick a file (MP4, MOV, MKV, AVI, WebM and most other formats are accepted).</li>
+      <li>Choose the <strong>output format</strong>: MP4 for maximum compatibility, WebM for the web, GIF for short animations, MP3/WAV to keep only the audio.</li>
+      <li>Optionally pick a <strong>resolution</strong>, set <strong>quality</strong>, <strong>trim</strong> with a start time and duration, or <strong>remove the audio</strong>.</li>
+      <li>Hit <strong>🚀 Convert</strong> and watch the progress bar - then preview the result and download it.</li>
+    </ol>
+
+    <h2>Tips</h2>
+    <ul>
+      <li><strong>Conversion speed</strong> depends on your CPU - a browser can't use your GPU for encoding, so long 4K videos take a while. Trimming first or picking 720p speeds things up a lot.</li>
+      <li><strong>GIFs get huge fast.</strong> Keep them under ~10 seconds, 480p and 12 fps for shareable file sizes.</li>
+      <li><strong>Audio extraction is fast</strong> - pulling an MP3 out of a video takes seconds since only the audio stream is re-encoded.</li>
+    </ul>
+
+    <h2>FAQ</h2>
+    <h3>Is there a file size limit?</h3>
+    <p>There is no artificial limit. The practical ceiling is your device's memory - files up to a few hundred MB are usually fine on a desktop.</p>
+    <h3>Why does my very first conversion take longer?</h3>
+    <p>The FFmpeg WebAssembly engine downloads once (about 30 MB) and is then cached by your browser, so later conversions start instantly.</p>
+    <h3>Does it work on mobile?</h3>
+    <p>Yes, in modern mobile browsers - but conversion is CPU-heavy, so short clips are recommended on phones.</p>
+    <h3>Is anything watermarked or tracked?</h3>
+    <p>No watermark, no account, no upload. The output file is bit-for-bit what FFmpeg produced on your device.</p>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>© 2026 PlanetVid · part of <a href="../">🪐 FreeToolPlanet</a> · <a href="about.html">About</a> · <a href="../privacy.html">Privacy Policy</a> · Conversion happens locally in your browser.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dridiyassin.github.io/sitemap.xml

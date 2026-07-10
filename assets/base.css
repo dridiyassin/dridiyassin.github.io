@@ -1,0 +1,170 @@
+/* ============================================================
+   FreeToolPlanet — shared foundation for all tools.
+   Liquid glass over charcoal "Obsidian": monochrome porcelain
+   ink + racing-green accent (meaning, not decoration). Dark only.
+   Tool-specific components live in each tool's style.css.
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+  --bg:#0f1011;--bg-1:#141517;--surface:#1a1b1e;--surface-2:#212327;
+  --border:rgba(255,255,255,.09);--border-2:rgba(255,255,255,.16);
+  --text:#f0efec;--dim:#a4a7ac;--faint:#6b6f76;
+  --accent:#5cb692;--pos:#5cb692;--err:#f87171;
+  --btn-bg:#f0efec;--ink:#141517;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 8px 20px -8px rgba(0,0,0,.6);
+  --shadow-md:0 18px 40px -16px rgba(0,0,0,.7);
+  --shadow-lg:0 40px 80px -36px rgba(0,0,0,.85);
+  --glass:color-mix(in srgb,var(--surface) 42%,transparent);
+  --glass-strong:color-mix(in srgb,var(--surface) 78%,transparent);
+  --glass-border:rgba(255,255,255,.10);
+  --glass-blur:blur(28px) saturate(190%);
+  --glass-sheen:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0) 46%);
+  --glass-edge:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -1px 0 rgba(255,255,255,.03);
+  --inset:rgba(6,7,8,.42);
+  --r-lg:24px;--r-md:16px;--r-sm:12px;
+  --font-display:"Bricolage Grotesque",system-ui,sans-serif;
+  --font-body:"Hanken Grotesk",system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --pad:clamp(16px,3vw,48px);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--text);
+  font:15.5px/1.6 var(--font-body);
+  min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+
+/* ---- full-viewport backdrop: color fields + planets ---------
+   Large soft fields + blurred planet glows give the glass
+   surfaces something visible to refract. */
+.backdrop{
+  position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(58% 44% at 86% -6%, color-mix(in srgb,var(--accent) 16%,transparent), transparent 70%),
+    radial-gradient(50% 42% at -8% 28%, color-mix(in srgb,#8a795a 13%,transparent), transparent 70%),
+    radial-gradient(44% 38% at 72% 62%, color-mix(in srgb,#44617c 12%,transparent), transparent 72%),
+    radial-gradient(52% 40% at 18% 108%, color-mix(in srgb,var(--accent) 11%,transparent), transparent 70%);
+}
+.backdrop::before{
+  content:"";position:absolute;width:min(46vw,580px);aspect-ratio:1;border-radius:50%;
+  top:-14%;right:-9%;
+  background:radial-gradient(circle at 32% 28%,
+    color-mix(in srgb,var(--accent) 34%,transparent),
+    color-mix(in srgb,var(--accent) 10%,transparent) 55%,transparent 72%);
+  filter:blur(48px);
+}
+.backdrop::after{
+  content:"";position:absolute;width:min(38vw,460px);aspect-ratio:1;border-radius:50%;
+  bottom:-16%;left:-10%;
+  background:radial-gradient(circle at 60% 30%,rgba(201,178,133,.22),rgba(201,178,133,.07) 55%,transparent 72%);
+  filter:blur(54px);
+}
+/* one small solid planet drifting behind the glass; tools can
+   reposition it via --planet-x / --planet-y */
+body::before{
+  content:"";position:fixed;z-index:-1;pointer-events:none;
+  left:var(--planet-x,9%);top:var(--planet-y,16%);
+  width:130px;height:130px;border-radius:50%;opacity:.5;
+  background:radial-gradient(circle at 32% 26%,#3d5a51,#232a28 58%,#17191a 80%);
+  box-shadow:0 0 70px 10px color-mix(in srgb,var(--accent) 14%,transparent),
+             inset -20px -16px 44px rgba(0,0,0,.6);
+}
+/* fine photographic grain keeps the fields from banding */
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+h1,h2,h3{font-family:var(--font-display);font-weight:700;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+
+/* ---- floating glass capsule header -------------------------- */
+.site-header{
+  position:sticky;top:14px;z-index:100;
+  margin:14px var(--pad) 26px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem 1rem;
+  min-height:60px;padding:8px 12px 8px 20px;border-radius:999px;
+  background:var(--glass-sheen),var(--glass-strong);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow-md);
+}
+.logo{display:inline-flex;align-items:baseline;font-family:var(--font-display);font-size:1.2rem;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+.logo:hover{text-decoration:none}
+.logo b{color:var(--text)}
+.logo .tag{font-family:var(--font-body);font-size:.68rem;font-weight:600;color:var(--faint);margin-left:.6rem;letter-spacing:.05em}
+.site-header nav{display:flex;align-items:center;flex-wrap:wrap}
+.site-header nav a{
+  margin-left:2px;color:var(--dim);font-size:.88rem;font-weight:600;
+  padding:8px 14px;border-radius:999px;transition:color .2s,background .2s;
+}
+.site-header nav a:hover{color:var(--text);background:rgba(255,255,255,.06);text-decoration:none}
+.site-header nav a.planet-link{color:var(--accent)}
+.site-header nav a.planet-link:hover{color:var(--text)}
+
+/* ---- page scaffolding (full width) --------------------------- */
+main{width:100%;padding:.4rem var(--pad) 3rem}
+h1{font-size:clamp(1.5rem,2.6vw,2.2rem);margin:.4rem 0 .8rem}
+h2{font-size:1.3rem;margin:1.8rem 0 .6rem}
+h3{font-size:1.02rem;margin:1.1rem 0 .3rem;font-weight:600}
+.intro{color:var(--dim);max-width:78ch;margin-bottom:1.4rem}
+.intro strong{color:var(--text)}
+.content{max-width:78ch;margin-top:2.5rem}
+.content ul,.content ol{padding-left:1.4rem;margin:.5rem 0}
+.content li{margin:.3rem 0;color:var(--dim)}
+.content li strong{color:var(--text)}
+.content p{color:var(--dim)}
+.content p strong{color:var(--text)}
+.content code{background:var(--inset);border:1px solid var(--glass-border);border-radius:6px;padding:.05rem .35rem;font-size:.85em;color:var(--text)}
+
+/* ---- buttons: glass + porcelain capsules ---------------------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-family:var(--font-body);font-weight:600;font-size:.85rem;
+  padding:9px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  background:var(--glass);color:var(--text);
+  border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-edge),var(--shadow-sm);
+  transition:transform .25s var(--ease),background .25s,border-color .25s,box-shadow .35s,color .25s;
+}
+.btn:hover{background:var(--glass-strong);transform:translateY(-2px);text-decoration:none}
+.btn.primary{
+  background:color-mix(in srgb,var(--btn-bg) 86%,transparent);color:var(--ink);border-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 24px -12px rgba(0,0,0,.65);
+}
+.btn.primary:hover{background:var(--btn-bg);transform:translateY(-2px)}
+.btn:disabled,.btn.primary:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;transform:none}
+
+.check{font-size:.8rem;font-weight:600;color:var(--dim);display:flex;gap:.4rem;align-items:center;cursor:pointer}
+.check input{accent-color:var(--accent)}
+
+/* ---- footer ----------------------------------------------------- */
+.site-footer{border-top:1px solid var(--border);margin-top:2.5rem;padding:1.4rem var(--pad);color:var(--faint);font-size:.85rem;text-align:center}
+.page{max-width:75ch;margin:0 auto;padding:1rem var(--pad) 3rem}
+.page p{margin:.6rem 0;color:var(--dim)}
+.page p strong{color:var(--text)}
+.page ul{padding-left:1.4rem;margin:.5rem 0}
+.page li{margin:.3rem 0;color:var(--dim)}
+
+/* thin scrollbars on the dark glass */
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent}
+
+@media(max-width:560px){
+  .site-header{margin:10px 10px 18px;padding:8px 12px}
+  .logo .tag{display:none}
+  .site-header nav a{padding:6px 10px;font-size:.82rem}
+  main{padding-inline:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  html{scroll-behavior:auto}
+}

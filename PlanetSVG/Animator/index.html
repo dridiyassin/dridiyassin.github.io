@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanetSVG - Free Online SVG Animator</title>
+<meta name="description" content="Animate SVG elements online with draw, fade, slide, scale, rotate and pulse effects. Preview on a timeline and export a self-contained animated SVG. Free, private and browser-based.">
+<meta name="keywords" content="svg animator online, animate svg free, svg animation generator, animated svg maker, svg path animation">
+<link rel="canonical" href="https://dridiyassin.github.io/PlanetSVG/Animator/">
+<meta property="og:title" content="PlanetSVG - Free Online SVG Animator">
+<meta property="og:description" content="Import an SVG, animate its elements visually and export a self-contained animated SVG.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://dridiyassin.github.io/PlanetSVG/Animator/">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/base.css"><link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848" crossorigin="anonymous"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PlanetSVG Animator","url":"https://dridiyassin.github.io/PlanetSVG/Animator/","applicationCategory":"DesignApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free visual SVG animation editor that runs entirely in the browser."}</script>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<header class="site-header">
+  <a class="logo" href="../"><b>PlanetSVG</b><span class="tag">visual SVG animator</span></a>
+  <nav><a href="../Editor/">Editor</a><a href="./">Animator</a><a href="../about.html">About</a><a href="../../privacy.html">Privacy</a><a class="planet-link" href="../../">🪐 FreeToolPlanet</a></nav>
+</header>
+<main>
+  <h1>Free Online SVG Animator</h1>
+  <p class="intro">Drop in an SVG, click any element, and add polished <strong>draw, fade, slide, scale, rotate or pulse animations</strong>. Preview and scrub the full timeline, then export one self-contained animated SVG. No signup and nothing uploaded.</p>
+
+  <div class="app">
+    <aside class="panel controls">
+      <section class="sec">
+        <div class="sec-title">Source</div>
+        <label class="drop" id="drop-zone" for="svg-file"><span>Drop an SVG here</span><small>or click to choose · max 2 MB</small></label>
+        <input id="svg-file" type="file" accept="image/svg+xml,.svg" hidden>
+        <div class="row"><a class="btn" href="../Editor/">✦ Create in editor</a><button class="btn" id="b-demo">Load demo</button><button class="btn danger" id="b-clear">Clear</button></div>
+      </section>
+      <section class="sec">
+        <div class="sec-title">Elements <small id="element-count"></small></div>
+        <div id="elements" class="element-list" aria-label="SVG elements"></div>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <div class="stage-bar">
+        <div class="row"><button class="btn primary" id="b-play">▶ Play</button><button class="btn" id="b-restart">↻ Restart</button></div>
+        <label class="check"><input type="checkbox" id="loop" checked> Loop preview</label>
+        <span class="zoom-label">Click an element to select it</span>
+      </div>
+      <div class="stage-shell" id="stage-shell"><div id="stage" class="stage"></div><div id="empty" class="empty"><b>Your SVG will appear here</b><span>Import a file or load the demo to start.</span></div></div>
+      <div class="timeline">
+        <div class="time-head"><span id="time-label">0.00s</span><span id="duration-label">Timeline: 0.00s</span></div>
+        <input type="range" id="scrubber" min="0" max="1" step="0.01" value="0" aria-label="Timeline position">
+        <div class="ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+      </div>
+    </section>
+
+    <aside class="panel inspector">
+      <section class="sec">
+        <div class="sec-title">Animation <small id="selected-name">select an element</small></div>
+        <div id="editor" class="editor" aria-disabled="true">
+          <label class="field">Effect<select id="effect"><option value="draw">Draw path</option><option value="fade">Fade in</option><option value="slide-up">Slide up</option><option value="slide-right">Slide right</option><option value="scale">Scale in</option><option value="rotate">Rotate in</option><option value="pulse">Pulse</option></select></label>
+          <div class="field-grid">
+            <label class="field">Duration (s)<input id="duration" type="number" min="0.1" max="30" step="0.1" value="1"></label>
+            <label class="field">Delay (s)<input id="delay" type="number" min="0" max="60" step="0.1" value="0"></label>
+            <label class="field">Easing<select id="easing"><option value="ease-out">Ease out</option><option value="ease-in-out">Ease in/out</option><option value="linear">Linear</option><option value="cubic-bezier(.22,1,.36,1)">Smooth spring</option></select></label>
+            <label class="field">Repeat<select id="iterations"><option value="1">Once</option><option value="2">Twice</option><option value="3">3 times</option><option value="infinite">Forever</option></select></label>
+          </div>
+          <button class="btn primary wide" id="b-add">＋ Add animation</button>
+        </div>
+      </section>
+      <section class="sec tracks-sec">
+        <div class="sec-title">Tracks <small id="track-count">0</small></div>
+        <div id="tracks" class="tracks"></div>
+      </section>
+      <section class="sec export-sec">
+        <div class="sec-title">Export</div>
+        <label class="check"><input type="checkbox" id="autoplay" checked> Play automatically when opened</label>
+        <div class="row"><button class="btn primary" id="b-export" disabled>⬇ Animated SVG</button><button class="btn" id="b-css" disabled>Copy CSS</button></div>
+        <p class="status" id="status" role="status">Import an SVG to begin.</p>
+      </section>
+    </aside>
+  </div>
+</main>
+<footer class="site-footer"><p>© 2026 PlanetSVG · <a href="../about.html">About</a> · <a href="../../privacy.html">Privacy Policy</a></p></footer>
+<script src="app.js"></script>
+</body>
+</html>

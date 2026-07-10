@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeToolPlanet - A Planet of Free Browser Tools</title>
+<meta name="description" content="FreeToolPlanet is a growing collection of free, browser-based tools for developers, media and artists. Everything runs on your device - no signup, nothing uploaded.">
+<link rel="canonical" href="https://dridiyassin.github.io/">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="FreeToolPlanet - A Planet of Free Browser Tools">
+<meta property="og:description" content="Free, browser-based tools for devs, media and artists. Runs entirely on your device - no signup, nothing uploaded.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dridiyassin.github.io/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848"
+     crossorigin="anonymous"></script>
+<style>
+/* ============================================================
+   FreeToolPlanet — liquid glass over charcoal "Obsidian".
+   Monochrome porcelain ink + racing-green accent. Dark only.
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1011;--surface:#1a1b1e;
+  --border:rgba(255,255,255,.09);
+  --txt:#f0efec;--dim:#a4a7ac;--faint:#6b6f76;
+  --accent:#5cb692;--accent-soft:#8fd9b0;
+  --btn-bg:#f0efec;--ink:#141517;
+  --glass:color-mix(in srgb,var(--surface) 42%,transparent);
+  --glass-strong:color-mix(in srgb,var(--surface) 78%,transparent);
+  --glass-border:rgba(255,255,255,.10);
+  --glass-blur:blur(28px) saturate(190%);
+  --glass-sheen:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0) 46%);
+  --glass-edge:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -1px 0 rgba(255,255,255,.03);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 8px 20px -8px rgba(0,0,0,.6);
+  --shadow-md:0 18px 40px -16px rgba(0,0,0,.7);
+  --font-display:"Bricolage Grotesque",system-ui,sans-serif;
+  --font-body:"Hanken Grotesk",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--txt);
+  font:16px/1.6 var(--font-body);
+  min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+/* soft color fields the glass refracts */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(58% 44% at 86% -6%, color-mix(in srgb,var(--accent) 15%,transparent), transparent 70%),
+    radial-gradient(50% 42% at -8% 28%, color-mix(in srgb,#8a795a 12%,transparent), transparent 70%),
+    radial-gradient(44% 38% at 72% 55%, color-mix(in srgb,#44617c 11%,transparent), transparent 72%);
+}
+/* fine grain keeps the fields from banding */
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+
+/* ── starfield ─────────────────────────────── */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+#stars i{position:absolute;border-radius:50%;background:#fff;animation:tw linear infinite}
+@keyframes tw{0%,100%{opacity:.10}50%{opacity:.7}}
+.shoot{position:fixed;top:12%;left:-10%;width:110px;height:1px;z-index:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#cfe8db,#fff);border-radius:2px;
+  transform:rotate(18deg);opacity:0;animation:shoot 9s ease-in 3s infinite}
+.shoot.s2{top:34%;animation-delay:13s;animation-duration:11s}
+@keyframes shoot{0%{transform:translate(0,0) rotate(18deg);opacity:0}
+  2%{opacity:.9}6%{transform:translate(60vw,20vw) rotate(18deg);opacity:0}100%{opacity:0}}
+
+/* ── header: floating glass capsule ────────── */
+.top{
+  position:sticky;top:14px;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  margin:14px clamp(16px,3vw,48px) 0;
+  min-height:56px;padding:8px 20px;border-radius:999px;
+  background:var(--glass-sheen),var(--glass-strong);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow-md);
+  font-size:.9rem;
+}
+.top .mark{font-family:var(--font-display);font-weight:700;font-size:1.1rem;letter-spacing:-.02em;color:var(--txt)}
+.top .mark span{color:var(--accent)}
+.top a.gh{color:var(--dim);font-weight:600;padding:7px 14px;border-radius:999px;transition:color .2s,background .2s}
+.top a.gh:hover{color:var(--txt);background:rgba(255,255,255,.06);text-decoration:none}
+
+/* ── hero ──────────────────────────────────── */
+.hero{position:relative;z-index:2;text-align:center;padding:3.6rem 1.5rem 1rem}
+.hero h1{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(2.2rem,5.5vw,3.6rem);letter-spacing:-.02em;line-height:1.1;text-wrap:balance;
+  animation:rise .9s var(--ease) both;
+}
+.hero h1 .grad{color:var(--accent-soft)}
+.hero .sub{color:var(--dim);max-width:52ch;margin:1.1rem auto 0;font-size:1.05rem;animation:rise .9s var(--ease) .12s both}
+.chips{display:flex;gap:.55rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;animation:rise .9s var(--ease) .22s both}
+.chip{
+  font-size:.78rem;font-weight:600;color:var(--dim);
+  border:1px solid var(--glass-border);border-radius:999px;padding:.34rem .95rem;
+  background:var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-edge),var(--shadow-sm);
+}
+.chip b{color:var(--txt);font-weight:700}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* ── category pillars: floating glass cards ── */
+main{position:relative;z-index:2;width:100%;max-width:1240px;margin:0 auto;padding:2.6rem 1.5rem 0}
+.columns{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;align-items:stretch}
+.col{
+  --tether:165px;
+  position:relative;display:flex;flex-direction:column;gap:.85rem;
+  padding:1.25rem;border-radius:24px;
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow);
+  animation:rise .9s var(--ease) both;
+}
+.col.dev{animation-delay:.28s}
+.col.media{--tether:105px;animation-delay:.38s}
+.col.artist{animation-delay:.48s}
+/* tether line + anchor dot down to the planet */
+.col::after{content:'';position:absolute;left:50%;top:100%;width:1px;height:var(--tether);
+  background:linear-gradient(to bottom,var(--accent),transparent 95%)}
+.col::before{content:'';position:absolute;left:50%;top:calc(100% + var(--tether) - 3px);
+  width:7px;height:7px;margin-left:-3px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px 2px color-mix(in srgb,var(--accent) 45%,transparent)}
+.col h2{
+  display:flex;align-items:center;gap:.55rem;
+  font-family:var(--font-body);font-size:.78rem;font-weight:700;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--accent);
+  padding-bottom:.55rem;border-bottom:1px solid var(--border);
+}
+.col h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px 2px color-mix(in srgb,var(--accent) 45%,transparent)}
+
+.tool{
+  display:block;padding:1.05rem;border-radius:16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--glass-border);
+  transition:border-color .3s,transform .3s var(--ease),box-shadow .35s,background .3s;
+}
+.tool:hover{
+  border-color:color-mix(in srgb,var(--accent) 45%,var(--glass-border));
+  background:rgba(255,255,255,.06);
+  transform:translateY(-4px);
+  box-shadow:var(--shadow-md);
+  text-decoration:none;
+}
+.tool .ico{font-size:1.7rem}
+.tool h3{font-family:var(--font-display);font-size:1.08rem;font-weight:700;letter-spacing:-.01em;margin:.45rem 0 .25rem;color:var(--txt)}
+.tool p{color:var(--dim);font-size:.85rem}
+.tool .go{display:inline-block;margin-top:.7rem;color:var(--accent);font-size:.82rem;font-weight:700}
+.tool.soon{border-style:dashed;opacity:.6;text-align:center;padding:1.4rem 1rem;cursor:default}
+.tool.soon .ico{opacity:.7}
+.tool.soon p{font-size:.8rem;margin-top:.3rem}
+.tool.soon:hover{transform:none;box-shadow:none;border-color:var(--glass-border);background:rgba(255,255,255,.04)}
+
+/* ── the planet ────────────────────────────── */
+/* the zone is pulled up 110px (transparent headroom) so the planet's
+   glow fades out inside it instead of being cut at the clip edge */
+.planet-zone{position:relative;z-index:1;flex:1;min-height:calc(clamp(240px,34vh,420px) + 110px);margin-top:-40px;overflow:hidden}
+.planet{position:absolute;left:50%;top:138px;transform:translateX(-50%);
+  width:max(150vw,1200px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 50% 12%,#356450 0%,#22443a 24%,#142a22 48%,#0a1713 72%,#060d0b 100%);
+  box-shadow:0 -26px 100px color-mix(in srgb,var(--accent) 24%,transparent),0 -6px 34px rgba(201,178,133,.13)}
+.planet::after{content:'';position:absolute;inset:0;border-radius:50%;
+  box-shadow:inset 0 25px 60px rgba(143,217,176,.24),inset 0 90px 160px color-mix(in srgb,var(--accent) 10%,transparent)}
+.surface{position:absolute;inset:0;border-radius:50%;animation:spin 280s linear infinite;background:
+  radial-gradient(90px 60px at 44% 6%, rgba(143,217,176,.13), transparent 70%),
+  radial-gradient(50px 34px at 56% 4%, rgba(0,0,0,.32), transparent 70%),
+  radial-gradient(34px 24px at 61% 8.5%, rgba(0,0,0,.30), transparent 70%),
+  radial-gradient(120px 70px at 35% 11%, rgba(201,178,133,.09), transparent 70%),
+  radial-gradient(26px 18px at 50% 10%, rgba(0,0,0,.28), transparent 70%),
+  radial-gradient(70px 40px at 66% 13%, rgba(143,217,176,.09), transparent 70%),
+  radial-gradient(44px 30px at 40% 16%, rgba(0,0,0,.22), transparent 70%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* satellite orbiting the planet */
+.orbit{position:absolute;left:50%;top:70px;width:min(64vw,700px);aspect-ratio:1;transform:translateX(-50%) scaleY(.28);pointer-events:none}
+.orbit .ring{position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(164,167,172,.18);animation:spin 26s linear infinite}
+.orbit .sat{position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;
+  background:#d5f0e2;box-shadow:0 0 12px 3px color-mix(in srgb,var(--accent-soft) 65%,transparent)}
+/* footer text sits on the planet surface */
+.planet-zone footer{position:absolute;left:0;right:0;top:calc(clamp(90px,14vh,150px) + 110px);z-index:3;text-align:center;color:#a5cdbb;font-size:.85rem;padding:0 1.5rem;text-shadow:0 1px 8px rgba(6,13,11,.8)}
+.planet-zone footer a{color:#d5f0e2}
+.planet-zone footer .tiny{display:block;margin-top:.35rem;font-size:.72rem;color:#6f8f80}
+
+@media(max-width:900px){
+  .columns{grid-template-columns:1fr;max-width:440px;margin:0 auto}
+  .col::before,.col::after{display:none}
+  .planet-zone{margin-top:-70px}
+}
+@media(max-width:560px){
+  .top{margin:10px 10px 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-delay:0ms!important}
+  #stars i,.shoot,.surface,.orbit .ring{animation:none}
+  .shoot{display:none}
+  .hero h1,.hero .sub,.chips,.col{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="shoot"></div><div class="shoot s2"></div>
+
+<div class="top">
+  <span class="mark">🪐 FreeTool<span>Planet</span></span>
+  <a class="gh" href="https://github.com/dridiyassin" target="_blank" rel="noopener">GitHub ↗</a>
+</div>
+
+<section class="hero">
+  <h1>A planet of <span class="grad">free browser tools</span></h1>
+  <p class="sub">Small, fast tools that run entirely on your device. Pick your orbit - dev, media or artist - and launch a tool.</p>
+  <div class="chips">
+    <span class="chip"><b>100% free</b></span>
+    <span class="chip"><b>No signup</b></span>
+    <span class="chip"><b>Nothing uploaded</b> · runs locally</span>
+    <span class="chip"><b>Open source</b></span>
+  </div>
+</section>
+
+<main>
+  <div class="columns">
+    <section class="col dev">
+      <h2><span class="dot"></span>Dev</h2>
+      <a class="tool" href="PlanetJSON/">
+        <div class="ico">🧩</div>
+        <h3>PlanetJSON</h3>
+        <p>Complete JSON toolkit - format, validate, minify and diff data, convert JSON ↔ CSV, or generate nested models for 12 programming languages.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+      <a class="tool" href="PlanetHTML/">
+        <div class="ico">🌐</div>
+        <h3>PlanetHTML</h3>
+        <p>Format and beautify HTML, open a complete website folder, test responsive previews and visually move elements while updating the source code.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+    </section>
+
+    <section class="col media">
+      <h2><span class="dot"></span>Media</h2>
+      <a class="tool" href="PlanetVid/">
+        <div class="ico">🎬</div>
+        <h3>PlanetVid</h3>
+        <p>Video converter - convert to MP4, WebM or GIF, extract MP3/WAV audio, trim, resize and mute. No upload, no watermark.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+      <a class="tool" href="PlanetImage/">
+        <div class="ico">🖼️</div>
+        <h3>PlanetImage</h3>
+        <p>Compress, resize, crop and convert images with templates for Discord, Instagram, YouTube, X, app stores and more. Lossless or lossy, entirely local.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+    </section>
+
+    <section class="col artist">
+      <h2><span class="dot"></span>Artist</h2>
+      <a class="tool" href="PlanetTex/">
+        <div class="ico">🎨</div>
+        <h3>PlanetTex</h3>
+        <p>Procedural texture generator - noise, clouds, bricks, rust, fire, magic aura and VFX textures, with layer blending and normal map export.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+      <a class="tool" href="PlanetSVG/">
+        <div class="ico">✨</div>
+        <h3>PlanetSVG</h3>
+        <p>Create SVG artwork with snapping shapes and custom paths, then animate it in one click with draw, fade, slide, scale, rotate and pulse effects.</p>
+        <span class="go">Launch tool →</span>
+      </a>
+    </section>
+  </div>
+</main>
+
+<div class="planet-zone">
+  <div class="orbit"><div class="ring"><div class="sat"></div></div></div>
+  <div class="planet"><div class="surface"></div></div>
+  <footer>
+    <p>© 2026 FreeToolPlanet · <a href="privacy.html">Privacy Policy</a></p>
+    <span class="tiny">Every tool runs in your browser. Nothing leaves your device.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var f=document.getElementById('stars'),h='';
+  for(var i=0;i<150;i++){
+    var s=(Math.random()*1.8+.6).toFixed(1);
+    h+='<i style="left:'+(Math.random()*100).toFixed(2)+'%;top:'+(Math.random()*100).toFixed(2)+
+       '%;width:'+s+'px;height:'+s+'px;animation-delay:'+(Math.random()*6).toFixed(1)+
+       's;animation-duration:'+(3+Math.random()*5).toFixed(1)+'s"></i>';
+  }
+  f.innerHTML=h;
+})();
+</script>
+</body>
+</html>

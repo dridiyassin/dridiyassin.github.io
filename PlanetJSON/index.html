@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanetJSON - Format, Validate, Diff, Convert JSON &amp; Generate Code</title>
+<meta name="description" content="Free JSON toolkit: format, validate, minify and diff JSON; convert JSON to CSV or CSV to JSON; generate nested models for TypeScript, C#, Java, Go, Python, Rust, Swift, Kotlin and more.">
+<meta name="keywords" content="json formatter, json validator, json minifier, json diff, json to typescript, json to c sharp, json to csv, csv to json, json model generator">
+<link rel="canonical" href="https://dridiyassin.github.io/PlanetJSON/"><meta name="robots" content="index, follow">
+<meta property="og:title" content="PlanetJSON - The Complete Browser JSON Toolkit"><meta property="og:description" content="Format, validate, diff and convert JSON, or generate typed models in 12 programming languages. Private and free."><meta property="og:type" content="website"><meta property="og:url" content="https://dridiyassin.github.io/PlanetJSON/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css"><link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848" crossorigin="anonymous"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PlanetJSON Data Toolkit","url":"https://dridiyassin.github.io/PlanetJSON/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Browser-based JSON formatter, validator, minifier, diff checker, CSV converter and multi-language model generator."}</script>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<header class="site-header"><a class="logo" href="./"><b>PlanetJSON</b><span class="tag">complete data toolkit</span></a><nav><a href="./">Tools</a><a href="about.html">About</a><a href="../privacy.html">Privacy</a><a class="planet-link" href="../">🪐 FreeToolPlanet</a></nav></header>
+<main>
+  <h1 id="page-title">JSON Formatter</h1>
+  <p class="intro" id="page-intro">Pretty-print JSON with syntax highlighting, recursive key sorting and document statistics.</p>
+  <div class="tool-layout">
+    <aside class="tool-nav" aria-label="JSON tools">
+      <div class="nav-label">Inspect</div>
+      <a href="#formatter" data-mode="formatter">✨ <span>Formatter</span></a>
+      <a href="#validator" data-mode="validator">✓ <span>Validator</span></a>
+      <a href="#minifier" data-mode="minifier">▣ <span>Minifier</span></a>
+      <a href="#diff" data-mode="diff">⇄ <span>Diff checker</span></a>
+      <div class="nav-label">Convert</div>
+      <a href="#code" data-mode="code">⌘ <span>JSON to code</span></a>
+      <a href="#json-to-csv" data-mode="json-to-csv">▦ <span>JSON to CSV</span></a>
+      <a href="#csv-to-json" data-mode="csv-to-json">{ } <span>CSV to JSON</span></a>
+    </aside>
+
+    <section class="tool-main">
+      <div class="toolbar">
+        <button id="btn-run" class="btn primary">✨ Format JSON</button>
+        <label class="field inline format-opt">Indent<select id="indent-select"><option value="2">2 spaces</option><option value="4">4 spaces</option><option value="tab">Tab</option></select></label>
+        <label class="check format-opt"><input type="checkbox" id="sort-chk"> Sort keys A→Z</label>
+        <label class="field inline code-opt" hidden>Language<select id="language"><option value="typescript">TypeScript</option><option value="csharp">C#</option><option value="java">Java</option><option value="kotlin">Kotlin</option><option value="swift">Swift</option><option value="go">Go</option><option value="rust">Rust</option><option value="python">Python dataclass</option><option value="javascript">JavaScript JSDoc</option><option value="php">PHP</option><option value="dart">Dart</option><option value="ruby">Ruby</option></select></label>
+        <label class="field inline code-opt" hidden>Root name<input id="root-name" value="Root" maxlength="50"></label>
+        <label class="check csv-opt" hidden><input type="checkbox" id="nested-chk" checked> Nested paths</label>
+        <span class="spacer"></span>
+        <button id="btn-copy" class="btn">📋 Copy</button><button id="btn-download" class="btn">⬇ Download</button><button id="btn-open" class="btn">📂 Open</button><button id="btn-sample" class="btn">🧪 Sample</button><button id="btn-clear" class="btn">🗑 Clear</button>
+        <input type="file" id="file-input" accept=".json,.csv,application/json,text/csv,text/plain" hidden>
+      </div>
+      <div id="status" class="status">Paste JSON below, then format it.</div>
+      <div class="editor" id="editor">
+        <section class="pane"><div class="pane-head"><span id="input-label">JSON input</span><span id="in-stats" class="pane-info"></span></div><textarea id="input" spellcheck="false" autocomplete="off" aria-label="Primary input"></textarea></section>
+        <section class="pane diff-pane" id="diff-pane" hidden><div class="pane-head"><span>Right JSON</span><span id="right-stats" class="pane-info"></span></div><textarea id="right-input" spellcheck="false" autocomplete="off" aria-label="JSON to compare"></textarea></section>
+        <section class="pane output-pane"><div class="pane-head"><span id="output-label">Output</span><span id="out-stats" class="pane-info"></span></div><pre id="output" class="out" aria-label="Tool output"><code id="out-code"></code></pre></section>
+      </div>
+      <div class="related"><b>Related tools</b><div id="related-links"></div></div>
+    </section>
+  </div>
+  <article class="content"><h2>One connected JSON and data toolkit</h2><p>PlanetJSON groups related jobs into one focused workspace. Format an API response, validate it, compare versions, generate application models or move it into CSV without copying sensitive data between unrelated websites.</p><h2>Nested data support</h2><p>The code generator discovers nested objects and arrays, merges object shapes found across array items, and creates named models recursively. CSV conversion uses dotted paths such as <code>customer.address.city</code> to preserve nested objects, while arrays and complex values remain valid JSON inside their cells.</p><h2>Private by design</h2><p>Every parser, converter and generator runs locally in your browser. Files and pasted data are never uploaded.</p></article>
+</main>
+<footer class="site-footer"><p>© 2026 PlanetJSON · part of <a href="../">🪐 FreeToolPlanet</a> · <a href="about.html">About</a> · <a href="../privacy.html">Privacy Policy</a></p></footer>
+<script src="app.js"></script>
+</body></html>

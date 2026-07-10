@@ -1,0 +1,70 @@
+/* PlanetVid — tool-specific components. Foundation in ../assets/base.css */
+
+.app{display:flex;flex-direction:column;gap:1.1rem;margin:1.2rem 0}
+
+/* ---- drop zone: dashed glass ---------------------------------- */
+.drop{
+  padding:2.4rem 1.2rem;text-align:center;cursor:pointer;border-radius:var(--r-lg);
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1.5px dashed var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow-sm);
+  transition:border-color .25s,box-shadow .35s,transform .25s var(--ease);
+}
+.drop:hover,.drop.over{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  box-shadow:var(--glass-edge),var(--shadow-md),0 0 0 4px color-mix(in srgb,var(--accent) 10%,transparent);
+}
+.drop.over{transform:scale(1.005)}
+.drop-ico{font-size:2.5rem}
+.drop-inner p strong{font-family:var(--font-display);font-size:1.05rem}
+.drop-hint{color:var(--dim);font-size:.85rem;margin-top:.3rem}
+.file-info{display:flex;align-items:center;justify-content:center;gap:.8rem;flex-wrap:wrap}
+.file-info span{color:var(--text);font-weight:600;word-break:break-all}
+
+/* ---- panels ----------------------------------------------------- */
+.panel{
+  padding:clamp(1rem,2vw,1.5rem);border-radius:var(--r-lg);
+  background:var(--glass-sheen),var(--glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-edge),var(--shadow);
+}
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.9rem 1.1rem}
+.field{display:block;font-size:.82rem;color:var(--dim);font-weight:600}
+.field select,.field input[type=number]{
+  width:100%;margin-top:.3rem;font:inherit;font-size:.9rem;color:var(--text);
+  background:var(--inset);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:.55rem .8rem;box-shadow:var(--glass-edge);
+  transition:border-color .2s,box-shadow .2s;
+}
+.field select{cursor:pointer}
+.field input::placeholder{color:var(--faint)}
+.field select:focus,.field input:focus{outline:none;border-color:var(--accent);box-shadow:var(--glass-edge),0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.field input[type=range]{width:100%;accent-color:var(--accent);margin-top:.55rem}
+.field #q-val{float:right;color:var(--accent);font-weight:700}
+.row{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin-top:1rem}
+.row .spacer{flex:1}
+
+/* button size variants */
+.btn.small{padding:5px 12px;font-size:.76rem}
+.btn.big{padding:.8rem 1.9rem;font-size:1rem}
+
+/* ---- progress ---------------------------------------------------- */
+.prog-head{display:flex;justify-content:space-between;font-size:.85rem;color:var(--dim);margin-bottom:.5rem}
+.prog-head #prog-pct{color:var(--text);font-weight:700;font-family:var(--font-display)}
+.prog-bar{height:10px;background:var(--inset);border:1px solid var(--glass-border);border-radius:999px;overflow:hidden;box-shadow:var(--glass-edge)}
+.prog-fill{height:100%;width:0%;border-radius:999px;background:var(--accent);transition:width .2s}
+.prog-fill.indet{width:35%;animation:slide 1.2s ease-in-out infinite alternate}
+@keyframes slide{from{margin-left:0}to{margin-left:65%}}
+.log-wrap{margin-top:.8rem;font-size:.8rem;color:var(--dim)}
+.log-wrap summary{cursor:pointer}
+.log-wrap pre{margin-top:.5rem;max-height:180px;overflow:auto;background:var(--inset);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:.7rem;font:11px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;color:var(--dim)}
+
+/* ---- result ------------------------------------------------------- */
+.result-title{margin:0 0 .8rem;font-size:1.15rem}
+.preview{display:flex;justify-content:center;background:rgba(0,0,0,.5);border-radius:var(--r-md);overflow:hidden;margin-bottom:.5rem}
+.preview video,.preview img{max-width:100%;max-height:60vh}
+.preview audio{width:100%;margin:1.2rem 0}
+.result-info{color:var(--dim);font-size:.85rem}
+.error-note{color:var(--err);font-size:.85rem;margin-top:.6rem;white-space:pre-wrap}
