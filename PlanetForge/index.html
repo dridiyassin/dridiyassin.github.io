@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanetForge - Free Online UV Unwrap &amp; 3D Texture Painting Tool (OBJ)</title>
+<meta name="description" content="Free browser-based 3D texturing studio: import an OBJ, smart-unwrap UV islands, paint the texture in layers and preview roughness, metallic and bump on a material sphere. No signup, nothing uploaded.">
+<meta name="keywords" content="uv unwrap online free, 3d texture painting browser, obj uv unwrapping tool, texture paint online, pbr material preview, uv island editor">
+<link rel="canonical" href="https://dridiyassin.github.io/PlanetForge/">
+<meta property="og:title" content="PlanetForge - Free Online UV Unwrap &amp; 3D Texture Painting Tool">
+<meta property="og:description" content="Import an OBJ, generate packed UV islands, paint the texture in layers and preview the material - free, in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dridiyassin.github.io/PlanetForge/">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='5' fill='%230f1011'/><g fill='none' stroke='%235cb692' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' transform='translate(3.6 3.6) scale(.7)'><path d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/><path d='m3.3 7 8.7 5 8.7-5'/><path d='M12 22V12'/></g></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7599966418498848"
+     crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PlanetForge 3D Texturing Studio",
+  "url": "https://dridiyassin.github.io/PlanetForge/",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": "Free browser-based 3D texturing studio: OBJ import, smart UV unwrapping, layered texture painting and PBR-style material preview."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is PlanetForge free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. PlanetForge is 100% free with no signup. Models, textures and projects are processed entirely in your browser and never uploaded."}},
+    {"@type": "Question", "name": "What 3D formats can I import?", "acceptedAnswer": {"@type": "Answer", "text": "Wavefront OBJ files. Polygon faces are triangulated on import and the mesh is normalized so it always frames correctly in the viewport."}},
+    {"@type": "Question", "name": "How does the smart unwrap work?", "acceptedAnswer": {"@type": "Answer", "text": "Adjacent faces are grouped into islands wherever the angle between them is below your seam-angle threshold, each island is projected on its dominant plane keeping real-world proportions, and the islands are packed into the 0-1 UV square with your chosen pixel padding."}},
+    {"@type": "Question", "name": "Can I paint like in Substance Painter?", "acceptedAnswer": {"@type": "Answer", "text": "PlanetForge gives you a layered 1024x1024 base-color canvas with brush, eraser, island fill and color picker, plus size, opacity and hardness controls. Strokes commit with uniform opacity like a real painting app, and Ctrl+Z undoes them."}},
+    {"@type": "Question", "name": "Can I save my work?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Save the whole project - mesh, UV islands, layers and material settings - as one JSON file and load it back later. The composited texture also exports as PNG."}}
+  ]
+}
+</script>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+<header class="site-header">
+  <a class="logo" href="./"><b>PlanetForge</b><span class="tag">UV · paint · material</span></a>
+  <nav>
+    <a href="about.html">About</a>
+    <a href="../privacy.html">Privacy</a>
+    <a class="planet-link" href="../"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.6"/><ellipse cx="12" cy="12" rx="10.2" ry="3.9" transform="rotate(-18 12 12)"/></svg> FreeToolPlanet</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Free Online UV Unwrap &amp; 3D Texture Painting Studio</h1>
+  <p class="intro">Import an <strong>OBJ model</strong>, generate clean <strong>packed UV islands</strong> with angle-aware smart unwrapping, <strong>paint the texture in layers</strong> with brush, fill and eraser, and preview <strong>roughness, metallic and bump</strong> on a material sphere - free, no signup, nothing ever uploaded.</p>
+
+  <div class="app">
+    <aside class="panel side">
+      <section class="sec" data-panel="uv">
+        <div class="sec-head">Model <small id="modelStats">Demo cube · 12 tris</small></div>
+        <button id="importModel" class="drop"><strong>＋ Import 3D model</strong><small>OBJ · glTF · GLB · FBX · processed locally</small></button>
+        <input id="modelFile" type="file" accept=".obj,.gltf,.glb,.fbx,.bin" multiple hidden>
+      </section>
+
+      <section class="sec" data-panel="uv">
+        <div class="sec-head">Unwrap</div>
+        <label class="field">Method
+          <select id="unwrapMethod">
+            <option value="angle">Smart (angle based)</option>
+            <option value="projection">Box projection</option>
+          </select>
+        </label>
+        <label class="field">Seam angle <output id="angleOut">58°</output><input id="seamAngle" type="range" min="20" max="88" value="58"></label>
+        <label class="field">Island padding <output id="paddingOut">12 px</output><input id="padding" type="range" min="2" max="32" value="12"></label>
+        <label class="check"><input id="orient" type="checkbox" checked> Orient islands consistently</label>
+        <label class="check"><input id="preserve" type="checkbox"> Keep original face order</label>
+        <button id="unwrap" class="btn primary wide">Smart unwrap &amp; pack</button>
+        <p class="hint">Faces are grouped by surface angle, projected on their dominant plane and packed without overlap. Click an island in the UV view to select it, then drag to move it.</p>
+      </section>
+
+      <section class="sec" data-panel="uv">
+        <div class="sec-head">Selected island</div>
+        <div class="row">
+          <button id="rotateIsland" class="btn tiny" disabled>⟳ Rotate 90°</button>
+          <button id="flipIslandH" class="btn tiny" disabled>⇋ Flip H</button>
+          <button id="flipIslandV" class="btn tiny" disabled>⇵ Flip V</button>
+        </div>
+      </section>
+
+      <section class="sec" data-panel="paint" hidden>
+        <div class="sec-head">Brush</div>
+        <div class="tool-grid">
+          <button class="ptool active" data-tool="brush">✎<small>Paint</small></button>
+          <button class="ptool" data-tool="erase">◇<small>Erase</small></button>
+          <button class="ptool" data-tool="fill">▣<small>Fill</small></button>
+          <button class="ptool" data-tool="pick">◉<small>Pick</small></button>
+        </div>
+        <label class="field">Brush shape<select id="brushPreset" hidden></select></label>
+        <div id="brushPresets" class="brush-presets" aria-label="Brush shapes"></div>
+        <div class="row"><button id="saveBrush" class="btn tiny">＋ Save current brush</button><button id="deleteBrush" class="btn tiny">Delete custom</button></div>
+        <label class="field">Color<input id="brushColor" type="color" value="#d58b52"></label>
+        <label class="field">Size <output id="brushSizeOut">42 px</output><input id="brushSize" type="range" min="2" max="160" value="42"></label>
+        <label class="field">Opacity <output id="opacityOut">90%</output><input id="brushOpacity" type="range" min="5" max="100" value="90"></label>
+        <label class="field">Hardness <output id="hardnessOut">72%</output><input id="hardness" type="range" min="0" max="100" value="72"></label>
+        <label class="check"><input id="wireToggle" type="checkbox" checked> Show UV wireframe</label>
+        <label class="check"><input id="paintOnModel" type="checkbox"> Paint directly on 3D model <small>(Alt-drag orbits)</small></label>
+        <button id="undoStroke" class="btn wide">↶ Undo stroke <kbd>Ctrl+Z</kbd></button>
+        <p class="hint">Fill paints the UV island you click - click outside the islands to fill the whole layer.</p>
+      </section>
+
+      <section class="sec" data-panel="paint" hidden>
+        <div class="sec-head">Material brush</div>
+        <label class="check"><input id="materialBrush" type="checkbox"> Paint full material channels</label>
+        <label class="field">Preset<select id="materialPreset"></select></label>
+        <div class="material-swatch" id="materialSwatch"></div>
+        <div class="row"><button id="saveMaterialPreset" class="btn tiny">＋ Save current values</button><button id="deleteMaterialPreset" class="btn tiny">Delete custom</button></div>
+        <p class="hint">Material strokes paint base color, roughness, metallic and height together.</p>
+      </section>
+
+      <section class="sec" data-panel="paint" hidden>
+        <div class="sec-head">Texture layers <button id="addLayer" class="btn tiny">＋ Add</button></div>
+        <label class="field">Texture resolution<select id="textureResolution"><option value="256">256 × 256</option><option value="512">512 × 512</option><option value="1024" selected>1024 × 1024</option><option value="2048">2048 × 2048</option><option value="4096">4096 × 4096</option></select></label>
+        <label class="field">Material channel<select id="paintChannel"><option value="baseColor">Base color</option><option value="normal">Normal map</option><option value="roughness">Roughness</option><option value="metallic">Metallic</option><option value="height">Height</option><option value="emissive">Emissive</option><option value="opacity">Opacity</option></select></label>
+        <div id="layers" class="layers"></div>
+        <div class="row"><button id="addMask" class="btn tiny">◐ Add/toggle mask</button><button id="clearMask" class="btn tiny">Clear mask</button></div>
+        <button id="importTexture" class="btn wide"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>Import image / PlanetTex JSON</button>
+        <input id="textureFile" type="file" accept="image/*,.json" hidden>
+        <button id="bakePreview" class="btn primary wide" disabled>✓ Bake preview to layer</button>
+        <p class="hint" id="previewHint">PlanetTex presets remain a preview until you bake them.</p>
+      </section>
+
+      <section class="sec" data-panel="material" hidden>
+        <div class="sec-head">Material</div>
+        <label class="field">Roughness <output id="roughOut">46%</output><input id="roughness" type="range" min="0" max="100" value="46"></label>
+        <label class="field">Metallic <output id="metalOut">4%</output><input id="metallic" type="range" min="0" max="100" value="4"></label>
+        <label class="field">Bump strength <output id="bumpOut">38%</output><input id="bump" type="range" min="0" max="100" value="38"></label>
+        <label class="field">Light rotation <output id="lightOut">315°</output><input id="light" type="range" min="0" max="360" value="315"></label>
+        <label class="field">Environment
+          <select id="environment">
+            <option value="studio">Studio softbox</option>
+            <option value="courtyard">Courtyard</option>
+            <option value="night">Night workshop</option>
+          </select>
+        </label>
+        <button id="resetMaterial" class="btn wide">Reset material</button>
+      </section>
+
+      <section class="sec" data-panel="all">
+        <div class="sec-head">Project</div>
+        <div class="row">
+          <button id="newProject" class="btn">＋ New</button>
+          <button id="saveProject" class="btn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>Save</button>
+          <button id="loadProject" class="btn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>Load</button>
+          <input id="projectFile" type="file" accept=".json" hidden>
+        </div>
+        <button id="exportTexture" class="btn primary wide"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export texture PNG</button>
+        <label class="field">Model format<select id="exportFormat"><option value="glb">glTF Binary (.glb)</option><option value="gltf">glTF (.gltf)</option><option value="obj">Wavefront OBJ</option><option value="fbx">ASCII FBX</option></select></label>
+        <button id="exportModel" class="btn primary wide"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export textured model</button>
+        <p class="hint" id="autosaveStatus">Projects auto-save locally every 8 seconds.</p>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <div class="canvas-toolbar">
+        <button class="mode-tab active" data-mode="uv"><b>1</b> UV unwrap</button>
+        <button class="mode-tab" data-mode="paint"><b>2</b> Paint</button>
+        <button class="mode-tab" data-mode="material"><b>3</b> Material</button>
+        <span class="tool-divider"></span>
+        <label class="view-mode">View <select id="renderMode"><option value="solid">Solid</option><option value="texture" selected>Texture</option><option value="rendered">Rendered</option></select></label>
+        <span id="uvTools">
+          <button id="gridToggle" class="mini-btn active">Grid</button>
+          <button id="resetView" class="mini-btn">Reset view</button>
+        </span>
+        <span class="tool-info" id="statusText">Demo model ready</span>
+      </div>
+
+      <div class="uv-grid" id="uvWorkspace">
+        <div class="pane"><canvas id="modelCanvas"></canvas><span class="canvas-label">3D view · drag to orbit · scroll to zoom</span></div>
+        <div class="pane"><canvas id="uvCanvas"></canvas><span class="canvas-label">UV 0–1 space · drag islands</span></div>
+      </div>
+
+      <div class="paint-grid" id="paintWorkspace" hidden>
+        <div class="pane paint-pane"><canvas id="paintCanvas" width="1024" height="1024"></canvas><span class="canvas-label" id="paintLabel">Base color · 1024²</span></div>
+        <div class="pane paint-preview"><canvas id="paintModelCanvas"></canvas><span class="canvas-label">Live model · drag to orbit · scroll to zoom</span></div>
+      </div>
+
+      <div class="pane material-pane" id="materialWorkspace" data-env="studio" hidden>
+        <canvas id="materialCanvas"></canvas>
+        <span class="canvas-label">Material sphere · drag to rotate</span>
+      </div>
+    </section>
+  </div>
+
+  <article class="content">
+    <h2>What is PlanetForge?</h2>
+    <p>PlanetForge is a small, private <strong>3D surfacing studio in the browser</strong>. It covers the three steps between a raw model and a textured one: <strong>UV unwrapping</strong> (cutting the surface into flat islands), <strong>texture painting</strong> (coloring those islands in layers), and <strong>material preview</strong> (checking how roughness, metallic and bump read under light). Everything - parsing, unwrapping, painting, rendering - runs locally; your models never leave your device.</p>
+
+    <h2>How to texture a model</h2>
+    <ol>
+      <li><strong>Import an OBJ</strong> (or start with the demo cube). The mesh appears in the 3D view - drag to orbit, scroll to zoom.</li>
+      <li><strong>Unwrap it.</strong> Pick a seam angle - lower angles cut more seams and give flatter islands - and hit <em>Smart unwrap &amp; pack</em>. Islands keep their relative real-world size, so texel density stays even across the mesh.</li>
+      <li><strong>Arrange the islands.</strong> Click one in the UV view to select it, drag to move, or rotate and flip it with the island tools.</li>
+      <li><strong>Paint.</strong> Switch to the Paint workspace and color the layout with brush, island fill and eraser across as many layers as you like. The 3D view shows your paint mapped back onto the model.</li>
+      <li><strong>Check the material.</strong> The Material workspace wraps your texture around a sphere with roughness, metallic, bump and a movable light in three environments.</li>
+      <li><strong>Export</strong> the composited texture as PNG, or save the whole project as JSON to continue later.</li>
+    </ol>
+
+    <h2>Tips</h2>
+    <ul>
+      <li><strong>Seam angle ≈ 58°</strong> works for most hard-surface models; drop it toward 30° for organic shapes that need flatter islands.</li>
+      <li><strong>Island fill first, details after:</strong> block in each island's base color with the fill tool, then paint highlights on a second layer so you can erase without losing the base.</li>
+      <li><strong>Generate source textures in <a href="../PlanetTex/">PlanetTex</a></strong> - export any procedural texture there as PNG and import it straight into a paint layer here.</li>
+      <li><strong>Padding prevents bleeding:</strong> if colors from one island leak into a neighbor on the model, repack with more island padding.</li>
+    </ul>
+
+    <h2>FAQ</h2>
+    <h3>Is my model uploaded anywhere?</h3>
+    <p>No. PlanetForge is a static page - OBJ parsing, unwrapping, painting and rendering all happen in your browser. There is no server to upload to.</p>
+    <h3>What resolution is the texture?</h3>
+    <p>The paint canvas is 1024 × 1024. The exported PNG matches it exactly, with transparency where nothing was painted.</p>
+    <h3>Which unwrap method should I use?</h3>
+    <p><em>Smart (angle based)</em> follows the surface and is right for almost everything. <em>Box projection</em> groups faces by the axis they point along - useful for boxy, architectural meshes where you want exactly six-sided-projection style islands.</p>
+    <h3>Can I use the textures commercially?</h3>
+    <p>Yes. Everything you paint and export is yours, for personal or commercial projects, no attribution required.</p>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>© 2026 PlanetForge · part of <a href="../"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.6"/><ellipse cx="12" cy="12" rx="10.2" ry="3.9" transform="rotate(-18 12 12)"/></svg> FreeToolPlanet</a> · <a href="about.html">About</a> · <a href="../privacy.html">Privacy Policy</a> · Models and textures never leave your browser.</p>
+</footer>
+<div id="toast" role="status"></div>
+<iframe id="planetTexEngine" src="../PlanetTex/" title="PlanetTex renderer" hidden></iframe>
+<script src="app.js"></script>
+</body>
+</html>

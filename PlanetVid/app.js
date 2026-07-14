@@ -18,12 +18,27 @@
   const resultEl = $('result');
   const previewEl = $('preview');
 
-  const QUALITY = { // [label, x264 crf, vpx crf]
-    0: ['smaller file', 30, 40],
-    1: ['balanced', 24, 32],
-    2: ['best quality', 19, 24],
+  const QUALITY = { // [label, x264 crf, vpx crf, webp q]
+    0: ['smaller file', 30, 40, 55],
+    1: ['balanced', 24, 32, 75],
+    2: ['best quality', 19, 24, 90],
   };
-  const MIME = { mp4: 'video/mp4', webm: 'video/webm', gif: 'image/gif', mp3: 'audio/mpeg', wav: 'audio/wav' };
+  // kind: 'video' (full A/V), 'anim' (silent animation), 'audio' (audio only)
+  const FORMATS = {
+    mp4:  { ext: 'mp4',  mime: 'video/mp4',        kind: 'video' },
+    webm: { ext: 'webm', mime: 'video/webm',       kind: 'video' },
+    webm9:{ ext: 'webm', mime: 'video/webm',       kind: 'video' },
+    mkv:  { ext: 'mkv',  mime: 'video/x-matroska', kind: 'video' },
+    mov:  { ext: 'mov',  mime: 'video/quicktime',  kind: 'video' },
+    gif:  { ext: 'gif',  mime: 'image/gif',        kind: 'anim' },
+    webp: { ext: 'webp', mime: 'image/webp',       kind: 'anim' },
+    mp3:  { ext: 'mp3',  mime: 'audio/mpeg',       kind: 'audio' },
+    m4a:  { ext: 'm4a',  mime: 'audio/mp4',        kind: 'audio' },
+    ogg:  { ext: 'ogg',  mime: 'audio/ogg',        kind: 'audio' },
+    opus: { ext: 'opus', mime: 'audio/ogg',        kind: 'audio' },
+    flac: { ext: 'flac', mime: 'audio/flac',       kind: 'audio' },
+    wav:  { ext: 'wav',  mime: 'audio/wav',        kind: 'audio' },
+  };
 
   let file = null;
   let ffmpeg = null;
@@ -59,11 +74,14 @@
   });
   $('fmt-select').addEventListener('change', () => {
     const f = $('fmt-select').value;
-    const isAudio = f === 'mp3' || f === 'wav';
-    $('res-field').hidden = isAudio;
-    $('q-field').hidden = f === 'gif' || f === 'wav';
-    $('fps-field').hidden = f !== 'gif';
-    $('mute-field').style.visibility = (isAudio || f === 'gif') ? 'hidden' : 'visible';
+    const kind = FORMATS[f].kind;
+    const lossless = f === 'wav' || f === 'flac';
+    $('res-field').hidden = kind === 'audio';
+    $('fps-field').hidden = kind === 'audio';
+    $('rotate-field').hidden = kind === 'audio';
+    $('q-field').hidden = kind === 'audio' || f === 'gif'; // gif quality comes from its palette
+    $('abr-field').hidden = kind === 'anim' || lossless;
+    $('mute-field').style.visibility = kind === 'video' ? 'visible' : 'hidden';
   });
 
   /* ── engine loading ──────────────────────────────────── */
@@ -106,8 +124,14 @@
 
   function buildArgs(inName, outName) {
     const fmt = $('fmt-select').value;
-    const q = QUALITY[$('q-range').value];
+    const spec = FORMATS[fmt];
+    const qi = Number($('q-range').value);
+    const q = QUALITY[qi];
     const height = Number($('res-select').value);
+    const fps = Number($('fps-select').value);          // 0 = keep original
+    const speed = parseFloat($('speed-select').value) || 1;
+    const rotate = $('rotate-select').value;            // '', 'cw', 'ccw', '180'
+    const abr = $('abr-select').value + 'k';
     const start = parseFloat($('trim-start').value);
     const len = parseFloat($('trim-len').value);
     const mute = $('mute-chk').checked;
@@ -117,26 +141,58 @@
     args.push('-i', inName);
     if (len > 0) args.push('-t', String(len));
 
-    const scale = height > 0 ? 'scale=-2:min(' + height + '\\,ih)' : null;
-
-    if (fmt === 'mp4') {
-      if (scale) args.push('-vf', scale);
-      args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', String(q[1]), '-pix_fmt', 'yuv420p');
-      if (mute) args.push('-an'); else args.push('-c:a', 'aac', '-b:a', '128k');
-      args.push('-movflags', '+faststart');
-    } else if (fmt === 'webm') {
-      if (scale) args.push('-vf', scale);
-      args.push('-c:v', 'libvpx', '-crf', String(q[2]), '-b:v', '2M', '-deadline', 'realtime', '-cpu-used', '5');
-      if (mute) args.push('-an'); else args.push('-c:a', 'libvorbis', '-b:a', '128k');
-    } else if (fmt === 'gif') {
-      const fps = $('fps-select').value;
-      const h = height > 0 ? height : 480;
-      args.push('-vf', 'fps=' + fps + ',scale=-2:min(' + h + '\\,ih):flags=lanczos', '-loop', '0');
-    } else if (fmt === 'mp3') {
-      args.push('-vn', '-c:a', 'libmp3lame', '-q:a', String([6, 4, 2][$('q-range').value]));
-    } else if (fmt === 'wav') {
-      args.push('-vn', '-c:a', 'pcm_s16le');
+    if (spec.kind === 'audio') {
+      args.push('-vn');
+      if (speed !== 1) args.push('-af', 'atempo=' + speed);
+      if (fmt === 'mp3') args.push('-c:a', 'libmp3lame', '-b:a', abr);
+      else if (fmt === 'm4a') args.push('-c:a', 'aac', '-b:a', abr);
+      else if (fmt === 'ogg') args.push('-c:a', 'libvorbis', '-b:a', abr);
+      else if (fmt === 'opus') args.push('-c:a', 'libopus', '-b:a', abr);
+      else if (fmt === 'flac') args.push('-c:a', 'flac');
+      else args.push('-c:a', 'pcm_s16le');
+      args.push(outName);
+      return args;
     }
+
+    // shared video filter chain, in processing order
+    const vf = [];
+    if (speed !== 1) vf.push('setpts=PTS/' + speed);
+    if (rotate === 'cw') vf.push('transpose=1');
+    else if (rotate === 'ccw') vf.push('transpose=2');
+    else if (rotate === '180') vf.push('transpose=1', 'transpose=1');
+
+    if (fmt === 'gif') {
+      const h = height > 0 ? height : 480;
+      vf.push('fps=' + (fps || 12), 'scale=-2:min(' + h + '\\,ih):flags=lanczos');
+      // one-pass palette for far better colors than the default 256-color dither
+      args.push('-filter_complex', vf.join(',') +
+        ',split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5');
+      args.push('-loop', '0', outName);
+      return args;
+    }
+
+    if (height > 0) vf.push('scale=-2:min(' + height + '\\,ih)');
+    if (fps > 0) vf.push('fps=' + fps);
+    if (vf.length) args.push('-vf', vf.join(','));
+
+    if (fmt === 'webp') {
+      args.push('-c:v', 'libwebp', '-lossless', '0', '-q:v', String(q[3]), '-loop', '0', '-an');
+      args.push(outName);
+      return args;
+    }
+
+    if (fmt === 'webm') {
+      args.push('-c:v', 'libvpx', '-crf', String(q[2]), '-b:v', '2M', '-deadline', 'realtime', '-cpu-used', '5');
+      if (mute) args.push('-an'); else args.push('-c:a', 'libvorbis', '-b:a', abr);
+    } else if (fmt === 'webm9') {
+      args.push('-c:v', 'libvpx-vp9', '-crf', String(q[2]), '-b:v', '0', '-deadline', 'realtime', '-cpu-used', '5');
+      if (mute) args.push('-an'); else args.push('-c:a', 'libopus', '-b:a', abr);
+    } else { // mp4, mkv, mov — H.264 + AAC
+      args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', String(q[1]), '-pix_fmt', 'yuv420p');
+      if (mute) args.push('-an'); else args.push('-c:a', 'aac', '-b:a', abr);
+      if (fmt !== 'mkv') args.push('-movflags', '+faststart');
+    }
+    if (!mute && speed !== 1) args.push('-af', 'atempo=' + speed);
     args.push(outName);
     return args;
   }
@@ -177,9 +233,10 @@
     if (note) note.remove();
 
     const fmt = $('fmt-select').value;
+    const spec = FORMATS[fmt];
     const ext = (file.name.match(/\.([a-z0-9]+)$/i) || [, 'mp4'])[1].toLowerCase();
     const inName = 'input.' + ext;
-    const outName = 'output.' + fmt;
+    const outName = 'output.' + spec.ext;
 
     try {
       const ff = await getEngine();
@@ -190,21 +247,21 @@
       await ff.exec(buildArgs(inName, outName));
       const data = await ff.readFile(outName);
       if (!data || data.length < 100) throw new Error('FFmpeg produced no output.');
-      const blob = new Blob([data.buffer], { type: MIME[fmt] });
+      const blob = new Blob([data.buffer], { type: spec.mime });
       const url = URL.createObjectURL(blob);
 
       previewEl.innerHTML = '';
       let el;
-      if (fmt === 'gif') { el = document.createElement('img'); el.src = url; el.alt = 'Converted GIF'; }
-      else if (fmt === 'mp3' || fmt === 'wav') { el = document.createElement('audio'); el.src = url; el.controls = true; }
+      if (spec.kind === 'anim') { el = document.createElement('img'); el.src = url; el.alt = 'Converted animation'; }
+      else if (spec.kind === 'audio') { el = document.createElement('audio'); el.src = url; el.controls = true; }
       else { el = document.createElement('video'); el.src = url; el.controls = true; }
       previewEl.appendChild(el);
 
       const base = file.name.replace(/\.[a-z0-9]+$/i, '');
       const dl = $('btn-download');
       dl.href = url;
-      dl.download = base + '.' + fmt;
-      $('result-info').textContent = fmtBytes(blob.size) + ' · ' + file.name + ' → ' + base + '.' + fmt;
+      dl.download = base + '.' + spec.ext;
+      $('result-info').textContent = fmtBytes(blob.size) + ' · ' + file.name + ' → ' + base + '.' + spec.ext;
       setProgress(1, 'Finished');
       resultEl.hidden = false;
       resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

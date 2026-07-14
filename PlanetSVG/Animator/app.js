@@ -61,30 +61,78 @@
     if (!state.tracks.length) { box.innerHTML = '<div class="empty-list">No animations yet.</div>'; }
     state.tracks.forEach(function (t) { var item = document.createElement('div'); item.className = 'track'; item.innerHTML = '<b></b><span></span><button title="Remove animation">×</button>'; item.querySelector('b').textContent = effectLabel(t.effect) + ' · ' + t.target; item.querySelector('span').textContent = t.delay.toFixed(1) + 's delay · ' + t.duration.toFixed(1) + 's · ' + (t.iterations === 'infinite' ? 'loops' : t.iterations + '×'); item.querySelector('button').onclick = function () { state.tracks = state.tracks.filter(function (x) { return x.id !== t.id; }); renderTracks(); updateCSS(); persist(); }; box.appendChild(item); });
   }
+  // Convert an SVG transform *attribute* (translate/rotate/scale/skew/matrix, user units)
+  // into an equivalent CSS transform value so it can be composed into animation keyframes.
+  // Without this, a CSS `transform` in the keyframes would OVERRIDE the element's positioning
+  // transform attribute and snap it to the SVG origin (top-left, half-cropped).
+  function cssTransform(attr) {
+    if (!attr) return '';
+    var out = [], re = /([a-zA-Z]+)\s*\(([^)]*)\)/g, m;
+    while ((m = re.exec(attr))) {
+      var fn = m[1], a = m[2].trim().split(/[\s,]+/).map(parseFloat);
+      if (fn === 'translate') out.push('translate(' + (a[0] || 0) + 'px,' + (a[1] || 0) + 'px)');
+      else if (fn === 'scale') out.push('scale(' + a[0] + (a.length > 1 ? ',' + a[1] : '') + ')');
+      else if (fn === 'rotate') out.push(a.length >= 3 ? 'translate(' + a[1] + 'px,' + a[2] + 'px) rotate(' + a[0] + 'deg) translate(' + (-a[1]) + 'px,' + (-a[2]) + 'px)' : 'rotate(' + a[0] + 'deg)');
+      else if (fn === 'skewX') out.push('skewX(' + a[0] + 'deg)');
+      else if (fn === 'skewY') out.push('skewY(' + a[0] + 'deg)');
+      else if (fn === 'matrix') out.push('matrix(' + a.join(',') + ')');
+    }
+    return out.join(' ');
+  }
   function keyframes(t, el) {
+    var base = cssTransform(el.getAttribute('transform'));
+    // Growth/rotation effects go *inside* the base transform (pivot on the shape's own
+    // centre, via transform-box:fill-box); slides go *outside* (move in viewport space).
+    var inside = function (a) { return base ? base + ' ' + a : a; };
+    var outside = function (a) { return base ? a + ' ' + base : a; };
+    var rest = base || 'none';
     if (t.effect === 'draw') { var len = 1000; try { len = Math.ceil(el.getTotalLength()); } catch (_) {} return { rules: 'from{stroke-dashoffset:' + len + '}to{stroke-dashoffset:0}', setup: 'stroke-dasharray:' + len + ';stroke-dashoffset:' + len + ';' }; }
     if (t.effect === 'fade') return { rules: 'from{opacity:0}to{opacity:1}', setup: '' };
-    if (t.effect === 'slide-up') return { rules: 'from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}', setup: '' };
-    if (t.effect === 'slide-right') return { rules: 'from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}', setup: '' };
-    if (t.effect === 'scale') return { rules: 'from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}', setup: '' };
-    if (t.effect === 'rotate') return { rules: 'from{opacity:0;transform:rotate(-120deg) scale(.5)}to{opacity:1;transform:rotate(0) scale(1)}', setup: '' };
-    return { rules: '0%,100%{transform:scale(1)}50%{transform:scale(1.12)}', setup: '' };
+    if (t.effect === 'slide-up') return { rules: 'from{opacity:0;transform:' + outside('translateY(40px)') + '}to{opacity:1;transform:' + rest + '}', setup: '' };
+    if (t.effect === 'slide-right') return { rules: 'from{opacity:0;transform:' + outside('translateX(-40px)') + '}to{opacity:1;transform:' + rest + '}', setup: '' };
+    if (t.effect === 'scale') return { rules: 'from{opacity:0;transform:' + inside('scale(.2)') + '}to{opacity:1;transform:' + inside('scale(1)') + '}', setup: '' };
+    if (t.effect === 'rotate') return { rules: 'from{opacity:0;transform:' + inside('rotate(-120deg) scale(.5)') + '}to{opacity:1;transform:' + inside('rotate(0) scale(1)') + '}', setup: '' };
+    return { rules: '0%,100%{transform:' + inside('scale(1)') + '}50%{transform:' + inside('scale(1.12)') + '}', setup: '' };
   }
   function buildCSS(exportMode) {
-    var rules = [], assignments = [];
-    state.tracks.forEach(function (t, i) { var el = state.elements.find(function (x) { return x.getAttribute('data-fastsvg-id') === t.target; }); if (!el) return; var k = keyframes(t, el), name = 'fastsvg-' + i; rules.push('@keyframes ' + name + '{' + k.rules + '}'); assignments.push('[data-fastsvg-id="' + t.target + '"]{' + k.setup + 'transform-box:fill-box;transform-origin:center;animation:' + name + ' ' + t.duration + 's ' + t.easing + ' ' + t.delay + 's ' + t.iterations + ' both' + (exportMode && !$('autoplay').checked ? ';animation-play-state:paused' : '') + '}'); });
+    // All tracks that share a target must land in ONE rule with a combined
+    // animation list — a second `animation:` declaration for the same element
+    // would override the first and silently drop earlier tracks.
+    var rules = [], perEl = {}, order = [];
+    state.tracks.forEach(function (t, i) {
+      var el = state.elements.find(function (x) { return x.getAttribute('data-fastsvg-id') === t.target; });
+      if (!el) return;
+      var k = keyframes(t, el), name = 'fastsvg-' + i;
+      rules.push('@keyframes ' + name + '{' + k.rules + '}');
+      if (!perEl[t.target]) { perEl[t.target] = { setup: '', anims: [] }; order.push(t.target); }
+      if (k.setup && perEl[t.target].setup.indexOf(k.setup) === -1) perEl[t.target].setup += k.setup;
+      perEl[t.target].anims.push(name + ' ' + t.duration + 's ' + t.easing + ' ' + t.delay + 's ' + t.iterations + ' both');
+    });
+    var assignments = order.map(function (id) {
+      var e = perEl[id];
+      return '[data-fastsvg-id="' + id + '"]{' + e.setup + 'transform-box:fill-box;transform-origin:center;animation:' + e.anims.join(',') + (exportMode && !$('autoplay').checked ? ';animation-play-state:paused' : '') + '}';
+    });
     return rules.join('\n') + '\n' + assignments.join('\n');
   }
   function updateCSS() {
     if (!state.svg) return; var old = state.svg.querySelector('#fastsvg-styles'); if (old) old.remove();
     var style = document.createElementNS('http://www.w3.org/2000/svg', 'style'); style.id = 'fastsvg-styles'; style.textContent = buildCSS(false); state.svg.insertBefore(style, state.svg.firstChild);
     state.total = state.tracks.reduce(function (m, t) { return t.iterations === 'infinite' ? Math.max(m, t.delay + t.duration) : Math.max(m, t.delay + t.duration * Number(t.iterations)); }, 0);
-    $('duration-label').textContent = 'Timeline: ' + state.total.toFixed(2) + 's'; $('scrubber').max = Math.max(state.total, .01); $('scrubber').value = 0;
+    $('duration-label').textContent = 'Timeline: ' + state.total.toFixed(2) + 's'; $('scrubber').max = Math.max(state.total, .01); $('scrubber').value = 0; $('time-label').textContent = '0.00s';
   }
-  function restart() { if (!state.svg) return; cancelAnimationFrame(state.raf); state.svg.querySelectorAll('[data-fastsvg-id]').forEach(function (e) { e.style.animation = 'none'; void e.getBoundingClientRect(); e.style.animation = ''; }); state.started = performance.now(); state.playing = true; $('b-play').textContent = '❚❚ Pause'; tick(); }
+  function restart() { if (!state.svg) return; cancelAnimationFrame(state.raf); state.svg.querySelectorAll('[data-fastsvg-id]').forEach(function (e) { e.style.animation = 'none'; }); void state.svg.getBoundingClientRect(); state.svg.querySelectorAll('[data-fastsvg-id]').forEach(function (e) { e.style.animation = ''; e.style.animationPlayState = ''; }); state.started = performance.now(); state.playing = true; $('b-play').textContent = '❚❚ Pause'; tick(); }
   function tick() { if (!state.playing) return; var elapsed = (performance.now() - state.started) / 1000, total = state.total || 1; $('scrubber').value = Math.min(elapsed, total); $('time-label').textContent = Math.min(elapsed, total).toFixed(2) + 's'; if (elapsed >= total) { if ($('loop').checked && state.tracks.length) return restart(); state.playing = false; $('b-play').textContent = '▶ Play'; return; } state.raf = requestAnimationFrame(tick); }
   function togglePlay() { if (!state.svg) return; if (state.playing) { state.playing = false; cancelAnimationFrame(state.raf); state.svg.querySelectorAll('[data-fastsvg-id]').forEach(function (e) { e.style.animationPlayState = 'paused'; }); $('b-play').textContent = '▶ Play'; } else { state.svg.querySelectorAll('[data-fastsvg-id]').forEach(function (e) { e.style.animationPlayState = 'running'; }); state.started = performance.now() - Number($('scrubber').value) * 1000; state.playing = true; $('b-play').textContent = '❚❚ Pause'; tick(); } }
-  function scrub() { if (!state.svg) return; state.playing = false; cancelAnimationFrame(state.raf); var v = Number($('scrubber').value); $('time-label').textContent = v.toFixed(2) + 's'; state.tracks.forEach(function (t, i) { var el = state.svg.querySelector('[data-fastsvg-id="' + t.target + '"]'); if (el) { var k = keyframes(t, el); el.style.animation = 'fastsvg-' + i + ' ' + t.duration + 's ' + t.easing + ' ' + (-v + t.delay) + 's ' + t.iterations + ' both paused'; if (k.setup) el.style.cssText += k.setup; } }); $('b-play').textContent = '▶ Play'; }
+  function scrub() {
+    if (!state.svg) return; state.playing = false; cancelAnimationFrame(state.raf);
+    var v = Number($('scrubber').value); $('time-label').textContent = v.toFixed(2) + 's';
+    // Same grouping rule as buildCSS: one combined animation list per element.
+    // Setup props (stroke-dasharray…) already come from the injected stylesheet.
+    var perEl = {};
+    state.tracks.forEach(function (t, i) { (perEl[t.target] = perEl[t.target] || []).push('fastsvg-' + i + ' ' + t.duration + 's ' + t.easing + ' ' + (t.delay - v) + 's ' + t.iterations + ' both paused'); });
+    Object.keys(perEl).forEach(function (id) { var el = state.svg.querySelector('[data-fastsvg-id="' + id + '"]'); if (el) { el.style.animation = perEl[id].join(','); el.style.animationPlayState = 'paused'; } });
+    $('b-play').textContent = '▶ Play';
+  }
   function exportSVG() { if (!state.svg) return; var clone = state.svg.cloneNode(true), style = clone.querySelector('#fastsvg-styles'); if (style) style.textContent = buildCSS(true); clone.querySelectorAll('.fastsvg-selected').forEach(function (e) { e.classList.remove('fastsvg-selected'); }); clone.querySelectorAll('[data-fastsvg-id]').forEach(function (e) { e.removeAttribute('style'); }); clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); var blob = new Blob([new XMLSerializer().serializeToString(clone)], { type:'image/svg+xml' }), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'animated.svg'; a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000); setStatus('Animated SVG exported.', true); }
   function copyCSS() { navigator.clipboard.writeText(buildCSS(true)).then(function () { setStatus('Animation CSS copied.', true); }, function () { setStatus('Could not access the clipboard.', false); }); }
   function clearAll() { state = { source:'', svg:null, selected:null, elements:[], tracks:[], playing:false, started:0, raf:0, total:0 }; try { localStorage.removeItem('planetsvg_animator_autosave'); } catch (_) {} $('stage').innerHTML = ''; $('empty').hidden = false; $('editor').setAttribute('aria-disabled', 'true'); $('selected-name').textContent = 'select an element'; $('b-export').disabled = true; $('b-css').disabled = true; renderElements(); renderTracks(); setStatus('Import an SVG to begin.'); }

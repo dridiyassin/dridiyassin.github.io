@@ -249,6 +249,8 @@
   let selIds = [];
   let idSeq = 1;
   let fillIdx = 0;
+  let importSeq = 0;        // unique prefix counter for imported-SVG ids
+  let pendingFile = null;   // file awaiting the non-SVG convert/abort choice
   const bg = { on: false, color: '#0d1220' };
 
   let activeTab = 'circles';
@@ -271,10 +273,21 @@
       console.warn('Failed to auto-save to localStorage', e);
     }
   }
+  // Highest id used anywhere, including composite children — byId() recurses into
+  // children, so a new shape reusing a child id would hijack selection and dragging.
+  function maxShapeId(list) {
+    let m = 0;
+    for (const s of list) {
+      m = Math.max(m, Number(s.id) || 0);
+      if (s.type === 'composite' && s.p && Array.isArray(s.p.children)) m = Math.max(m, maxShapeId(s.p.children));
+    }
+    return m;
+  }
   function restore(json) {
     const s = JSON.parse(json);
     shapes = s.shapes;
     bg.on = s.bg.on; bg.color = s.bg.color;
+    idSeq = Math.max(idSeq, maxShapeId(shapes) + 1);
     selIds = selIds.filter(id => byId(id));
     $('bg-on').checked = bg.on;
     $('bg-color').value = bg.color;
@@ -439,6 +452,23 @@
         baseEl.setAttribute('clip-path', `url(#${clipId})`);
         g.appendChild(baseEl);
       }
+      return g;
+    } else if (s.type === 'embed') {
+      // Imported SVG rendered whole: a nested <svg> scales the original viewBox
+      // into an s.w × s.h box centred on the origin, then the usual transform places it.
+      const g = document.createElementNS(SVGNS, 'g');
+      g.setAttribute('transform', shapeTransform(s));
+      g.setAttribute('opacity', s.op);
+      const inner = document.createElementNS(SVGNS, 'svg');
+      inner.setAttribute('x', -s.w / 2);
+      inner.setAttribute('y', -s.h / 2);
+      inner.setAttribute('width', s.w);
+      inner.setAttribute('height', s.h);
+      inner.setAttribute('viewBox', s.p.vb);
+      inner.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      inner.innerHTML = s.p.markup;
+      g.appendChild(inner);
+      if (!isChildOfComposite) { g.setAttribute('class', 'shape'); g.dataset.id = s.id; }
       return g;
     } else {
       const el = document.createElementNS(SVGNS, 'path');
@@ -1463,6 +1493,10 @@
 
   function applyPathfinder(op) {
     if (selIds.length < 2) return;
+    if (selectedShapes().some((s) => s.type === 'embed')) {
+      alert('Pathfinder operations don’t apply to imported SVG objects.');
+      return;
+    }
     pushHistory();
     
     const sortedSelShapes = shapes.filter(s => selIds.includes(s.id));
@@ -1658,6 +1692,10 @@
         out += `</g>`;
       }
       return out;
+    } else if (s.type === 'embed') {
+      return `<g transform="${shapeTransform(s)}"` + (s.op !== 1 ? ` opacity="${s.op}"` : '') + '>' +
+        `<svg x="${-s.w / 2}" y="${-s.h / 2}" width="${s.w}" height="${s.h}" viewBox="${s.p.vb}" preserveAspectRatio="xMidYMid meet">` +
+        s.p.markup + '</svg></g>';
     } else {
       let rule = '';
       if (GEN[s.type] && GEN[s.type].evenodd) rule = ' fill-rule="evenodd"';
@@ -1764,7 +1802,7 @@
         shapes = d.shapes;
         bg.on = !!(d.bg && d.bg.on); bg.color = (d.bg && d.bg.color) || '#0d1220';
         $('bg-on').checked = bg.on; $('bg-color').value = bg.color;
-        idSeq = shapes.reduce((m, s) => Math.max(m, s.id), 0) + 1;
+        idSeq = maxShapeId(shapes) + 1;
         selIds = [];
         renderAll();
       } catch { alert('Not a PlanetSVG Editor preset file.'); }
@@ -1772,6 +1810,119 @@
     r.readAsText(f);
     e.target.value = '';
   });
+
+  /* import SVG (or other vector files) */
+  // Rewrite ids in an imported SVG so its gradients/masks/refs can't collide
+  // with the editor's own ids (grid pattern, masks) or with other imports.
+  function namespaceIds(root, prefix) {
+    const map = {};
+    root.querySelectorAll('[id]').forEach((el) => { const old = el.id; el.id = prefix + old; map[old] = prefix + old; });
+    if (!Object.keys(map).length) return;
+    root.querySelectorAll('*').forEach((el) => {
+      Array.from(el.attributes).forEach((a) => {
+        let v = a.value;
+        v = v.replace(/url\(\s*#([^)\s]+)\s*\)/g, (m, id) => (map[id] ? `url(#${map[id]})` : m));
+        if (/^#/.test(v) && (a.name === 'href' || a.localName === 'href')) { const id = v.slice(1); if (map[id]) v = '#' + map[id]; }
+        if (v !== a.value) a.value = v;
+      });
+    });
+  }
+
+  function parseImportedSVG(text) {
+    let doc;
+    try { doc = new DOMParser().parseFromString(text, 'image/svg+xml'); } catch (_) { return null; }
+    const root = doc.documentElement;
+    if (!root || root.tagName.toLowerCase() !== 'svg' || doc.querySelector('parsererror')) return null;
+    // strip anything scriptable
+    root.querySelectorAll('script,foreignObject,iframe,object,embed').forEach((n) => n.remove());
+    root.querySelectorAll('*').forEach((el) => {
+      Array.from(el.attributes).forEach((a) => {
+        if (/^on/i.test(a.name) || (/(?:href|src)$/i.test(a.name) && /^\s*(?:javascript|data:text\/html)/i.test(a.value))) el.removeAttribute(a.name);
+      });
+    });
+    namespaceIds(root, 'imp' + (importSeq++) + '-');
+
+    let vb = null;
+    const vbAttr = root.getAttribute('viewBox');
+    if (vbAttr) { const n = vbAttr.trim().split(/[\s,]+/).map(parseFloat); if (n.length === 4 && n.every((v) => !isNaN(v)) && n[2] > 0 && n[3] > 0) vb = n; }
+    if (!vb) { const w = parseFloat(root.getAttribute('width')), h = parseFloat(root.getAttribute('height')); if (w > 0 && h > 0) vb = [0, 0, w, h]; }
+
+    const ser = new XMLSerializer();
+    let children = '';
+    Array.from(root.childNodes).forEach((n) => { children += ser.serializeToString(n); });
+    // Preserve root-level presentation attributes (fill, style, class, font-*…) that the
+    // children inherit, by wrapping them in a group — structural attrs are dropped.
+    const skip = { xmlns: 1, width: 1, height: 1, viewbox: 1, id: 1, x: 1, y: 1, version: 1, preserveaspectratio: 1, baseprofile: 1, transform: 1 };
+    let rootAttrs = '';
+    Array.from(root.attributes).forEach((a) => {
+      const ln = a.name.toLowerCase();
+      if (skip[ln] || ln.indexOf('xmlns') === 0) return;
+      rootAttrs += ' ' + a.name + '="' + a.value.replace(/"/g, '&quot;') + '"';
+    });
+    const inner = rootAttrs ? '<g' + rootAttrs + '>' + children + '</g>' : children;
+
+    if (!vb) { // no viewBox and no width/height: measure the rendered geometry
+      const tmp = document.createElementNS(SVGNS, 'svg');
+      tmp.setAttribute('style', 'position:absolute;left:-99999px;top:0;width:10px;height:10px;overflow:hidden');
+      const g = document.createElementNS(SVGNS, 'g');
+      g.innerHTML = inner;
+      tmp.appendChild(g);
+      document.body.appendChild(tmp);
+      let bb = null;
+      try { bb = g.getBBox(); } catch (_) {}
+      document.body.removeChild(tmp);
+      vb = (bb && bb.width > 0 && bb.height > 0) ? [bb.x, bb.y, bb.width, bb.height] : [0, 0, 100, 100];
+    }
+    return { inner, vb: vb.join(' '), aspect: vb[2] / vb[3] };
+  }
+
+  function importSVG(text) {
+    const parsed = parseImportedSVG(text);
+    if (!parsed) return false;
+    pushHistory();
+    const maxDim = 320;
+    let w, h;
+    if (parsed.aspect >= 1) { w = maxDim; h = maxDim / parsed.aspect; } else { h = maxDim; w = maxDim * parsed.aspect; }
+    const s = {
+      id: idSeq++, type: 'embed', name: 'SVG import ' + idSeq,
+      x: CANVAS / 2, y: CANVAS / 2, w: Math.round(w), h: Math.round(h),
+      rot: 0, fh: 1, fv: 1, fill: '#8891a5', op: 1, stroke: '#e8edf7', sw: 0,
+      p: { markup: parsed.inner, vb: parsed.vb }
+    };
+    shapes.push(s);
+    selIds = [s.id];
+    renderAll();
+    return true;
+  }
+
+  function readAndImport(f) {
+    if (f.size > 4 * 1024 * 1024) { alert('That file is larger than 4 MB.'); return; }
+    const r = new FileReader();
+    r.onload = () => { if (!importSVG(String(r.result))) alert('Couldn’t read that as SVG. If it’s another vector format, export it to SVG first.'); };
+    r.onerror = () => alert('Could not read that file.');
+    r.readAsText(f);
+  }
+
+  function closeConvertModal() { $('convert-modal').hidden = true; pendingFile = null; }
+
+  $('b-import').addEventListener('click', () => $('import-file').click());
+  $('import-file').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    const ext = (f.name.split('.').pop() || '').toLowerCase();
+    if (ext === 'svg' || f.type === 'image/svg+xml') { readAndImport(f); return; }
+    // Another vector format — offer a best-effort conversion or abort.
+    pendingFile = f;
+    const label = ext ? ext.toUpperCase() : 'non-SVG';
+    $('convert-title').textContent = 'This looks like a' + (/^[AEIOU]/.test(label) ? 'n ' : ' ') + label + ' file';
+    $('convert-msg').textContent = 'PlanetSVG runs entirely in your browser and can’t convert ' + label +
+      ' to SVG here. You can try to read it as SVG anyway — this only works if it actually contains SVG data — or export it to SVG from your vector app first, then import that.';
+    $('convert-modal').hidden = false;
+  });
+  $('convert-try').addEventListener('click', () => { const f = pendingFile; $('convert-modal').hidden = true; pendingFile = null; if (f) readAndImport(f); });
+  $('convert-abort').addEventListener('click', closeConvertModal);
+  $('convert-modal').addEventListener('click', (e) => { if (e.target === $('convert-modal')) closeConvertModal(); });
 
   $('b-clear').addEventListener('click', () => {
     if (!shapes.length) return;

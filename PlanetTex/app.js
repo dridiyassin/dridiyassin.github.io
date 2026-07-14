@@ -481,3 +481,16 @@ $('btn-normal').onclick = () => {
 
 /* ---------- go ---------- */
 refresh();
+
+// Same-origin integration used by PlanetForge. It renders the real preset
+// with PlanetTex's shader stack instead of asking the consumer to imitate it.
+window.PlanetTex = {
+  renderPreset(layers, size = 1024) {
+    if (!Array.isArray(layers) || !layers.length || !layers.every(l => GENS[l.gi] && l.v))
+      throw new Error('Invalid PlanetTex preset');
+    state.layers = layers.map(l => ({ ...newLayer(l.gi), ...l, v: { ...defaults(l.gi), ...l.v } }));
+    state.sel = 0;
+    composite(size);
+    return out.toDataURL('image/png');
+  }
+};

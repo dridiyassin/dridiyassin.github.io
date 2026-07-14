@@ -144,6 +144,9 @@ h3{font-size:1.02rem;margin:1.1rem 0 .3rem;font-weight:600}
 .btn.primary:hover{background:var(--btn-bg);transform:translateY(-2px)}
 .btn:disabled,.btn.primary:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;transform:none}
 
+/* inline SVG icon glyphs */
+.ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em;flex:none}
+
 .check{font-size:.8rem;font-weight:600;color:var(--dim);display:flex;gap:.4rem;align-items:center;cursor:pointer}
 .check input{accent-color:var(--accent)}
 

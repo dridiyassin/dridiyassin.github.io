@@ -5,7 +5,7 @@
   const input = $('input'), rightInput = $('right-input'), outCode = $('out-code');
   let mode = 'formatter', lastOutput = '', outputExt = 'txt';
   const MODES = {
-    formatter: ['JSON Formatter', 'Pretty-print JSON with syntax highlighting, recursive key sorting and document statistics.', '✨ Format JSON', 'JSON input', 'Formatted JSON'],
+    formatter: ['JSON Formatter', 'Pretty-print JSON with syntax highlighting, recursive key sorting and document statistics.', 'Format JSON', 'JSON input', 'Formatted JSON'],
     validator: ['JSON Validator', 'Check strict RFC 8259 JSON and locate the first syntax error by line and column.', '✓ Validate JSON', 'JSON input', 'Validation details'],
     minifier: ['JSON Minifier', 'Remove unnecessary whitespace and calculate the exact payload savings.', '▣ Minify JSON', 'JSON input', 'Minified JSON'],
     diff: ['JSON Diff Checker', 'Compare JSON structurally by path, ignoring formatting and object key order.', '⇄ Compare JSON', 'Left JSON', 'Differences'],

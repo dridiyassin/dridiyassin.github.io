@@ -151,6 +151,23 @@ kbd{background:var(--inset);border:1px solid var(--glass-border);border-bottom-w
 .handle.node-handle:hover{fill:#fff;r:7}
 .node-line-preview{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 4;pointer-events:none}
 
+/* ---- convert / unsupported-file modal ---------------------------------------- */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:1.2rem;background:rgba(6,8,9,.62);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.modal{
+  width:min(440px,100%);border-radius:var(--r-md);padding:1.4rem 1.5rem;
+  background:var(--glass-sheen),var(--glass-strong);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);box-shadow:var(--glass-edge),var(--shadow-md);
+}
+.modal h3{font-family:var(--font-display,inherit);font-size:1.05rem;margin:0 0 .55rem}
+.modal p{font-size:.85rem;color:var(--dim);line-height:1.6;margin:0 0 1.1rem}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end}
+.modal-actions .btn{flex:0 0 auto}
+
 /* ---- size previews ----------------------------------------------------------- */
 .preview-row{
   display:flex;align-items:center;gap:1rem;
